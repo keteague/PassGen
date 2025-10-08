@@ -54,10 +54,14 @@
 							</label>
 							<div class="error" id="countError" role="alert" aria-live="polite"></div>
 						</div>
-						<div class="field test-field" style="max-width:140px;">
-							<label for="testInput" class="label-inline-head">
-								<span class="label-row">Test</span>
-								<input id="testInput" name="test" type="text" class="len-narrow" placeholder="Test value" />
+						<div class="field mode-field" style="max-width:160px;">
+							<label for="modeSelect" class="label-inline-head">
+								<span class="label-row">Mode</span>
+								<select id="modeSelect" class="len-mode-select" style="font-size:.65rem;">
+									<option value="password" selected>Password</option>
+									<option value="passphrase">Passphrase</option>
+									<option value="hex">Hexadecimal</option>
+								</select>
 							</label>
 						</div>
 					</form>
@@ -200,6 +204,8 @@
 				const optNoDuplicates=document.getElementById('optNoDuplicates');
 				const optNoSequential=document.getElementById('optNoSequential');
 				const optSavePrefs=document.getElementById('optSavePrefs');
+				const modeSelect=document.getElementById('modeSelect');
+				// Prefix option elements (added dynamically below)
 				const symbolsText=document.getElementById('symbolsText');
 				const symbolsReset=document.getElementById('symbolsReset');
 				const symbolsError=document.getElementById('symbolsError');
@@ -273,6 +279,18 @@
 					if(optSymbols?.checked){ pool+= sanitizeSymbols(); }
 					return pool;
 				}
+				function buildPrefixSegment(len,type){
+					if(!len || len<=0) return '';
+					let source='';
+					if(type==='uppercase') source='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+					else if(type==='lowercase') source='abcdefghijklmnopqrstuvwxyz';
+					else if(type==='symbols') source=sanitizeSymbols();
+					else if(type==='random') source=buildPool();
+					if(!source) return '';
+					let out='';
+					for(let i=0;i<len;i++){ out+= source[Math.floor(Math.random()*source.length)]; }
+					return out;
+				}
 				const SIMILAR_SET=new Set(['i','I','l','L','1','o','O','0']);
 				function withoutSimilar(pool){ if(!optNoSimilar?.checked) return pool; return [...new Set([...pool].filter(ch=>!SIMILAR_SET.has(ch)))].join(''); }
 				function hasSequential(str){ if(!optNoSequential?.checked) return false; const seqLen=3; const lowers='abcdefghijklmnopqrstuvwxyz'; const uppers=lowers.toUpperCase(); const digits='0123456789'; function checkSet(set){ for(let i=0;i<=set.length-seqLen;i++){ const f=set.slice(i,i+seqLen); if(str.includes(f)) return true; const rev=[...f].reverse().join(''); if(str.includes(rev)) return true; } return false; } return checkSet(lowers)||checkSet(uppers)||checkSet(digits); }
@@ -281,6 +299,21 @@
 					pool=withoutSimilar(pool);
 					if(optNoDuplicates?.checked && pool.length < len){ return {pwd:null, reason:'pool-too-small'}; }
 					const isLetter=(ch)=> /[A-Za-z]/.test(ch);
+					// Prefix handling (password mode only)
+					let prefixCfg=null;
+					if(modeSelect?.value==='password' && window.__prefixEnabled){
+						prefixCfg=window.__prefixConfig;
+					}
+					const prefixStr= (prefixCfg && prefixCfg.enabled)? buildPrefixSegment(prefixCfg.length, prefixCfg.type):'';
+					const coreLen = len - prefixStr.length;
+					if(coreLen < 0) return {pwd:null, reason:'prefix-too-long'};
+					if(optNoDuplicates?.checked && prefixStr){
+						// ensure prefix characters removed from pool if duplicates disallowed
+						const poolArr=[...pool];
+						for(const ch of prefixStr){ const idx=poolArr.indexOf(ch); if(idx!==-1) poolArr.splice(idx,1); }
+						pool=poolArr.join('');
+						if(pool.length < coreLen) return {pwd:null, reason:'pool-too-small'};
+					}
 					for(let attempt=0; attempt<5000; attempt++){
 						let pwd='';
 						let localPool=pool;
@@ -294,6 +327,7 @@
 								pwd+=randChar(pool);
 							}
 						}
+						if(prefixStr){ pwd=prefixStr + pwd.slice(prefixStr.length); }
 						if(optBeginLetter?.checked && !isLetter(pwd[0])) { continue; }
 						if(hasSequential(pwd)) { continue; }
 						return {pwd, reason:null};
@@ -340,6 +374,7 @@
 						let msg='Unable to satisfy constraints.';
 						if(failures.includes('begin-letter-no-letters')) msg='"Begin with a letter" requires at least one letter class (enable Uppercase or Lowercase).';
 						else if(failures.includes('pool-too-small')) msg='Character pool too small for "No duplicates" at requested length.';
+						else if(failures.includes('prefix-too-long')) msg='Prefix length exceeds total requested length.';
 						else if(failures.includes('attempts-exhausted')) msg='Constraints (e.g., no sequential / first must be letter) could not be met after many attempts.';
 						symbolsError.textContent=msg; return;
 					}
@@ -405,6 +440,8 @@
 						lengthMin:lengthMin.value,
 						lengthMax:lengthMax.value,
 						count:countInput.value,
+						mode:modeSelect.value,
+						prefix:(window.__prefixConfig||null),
 						save:!!optSavePrefs.checked
 					};
 					const serialized=JSON.stringify(data);
@@ -429,6 +466,8 @@
 						lengthMin:lengthMin.value,
 						lengthMax:lengthMax.value,
 						count:countInput.value,
+						mode:modeSelect.value,
+						prefix:(window.__prefixConfig||null),
 						save:false
 					};
 					const serialized=JSON.stringify(data);
@@ -459,6 +498,8 @@
 						if('lengthMode' in d && d.lengthMode){ lengthMode.value=d.lengthMode; }
 						if('lengthMin' in d) lengthMin.value=d.lengthMin;
 						if('lengthMax' in d) lengthMax.value=d.lengthMax;
+						if('mode' in d && modeSelect) modeSelect.value=d.mode;
+						if('prefix' in d && d.prefix){ window.__prefixConfig=d.prefix; window.__prefixEnabled=d.prefix.enabled; }
 						// Recompute mode visibility
 						lengthMode.dispatchEvent(new Event('change'));
 						validate();
@@ -466,6 +507,49 @@
 						syncSymbols();
 					}catch(e){}
 				}
+				// Inject Prefix UI into options (Password mode only)
+				(function initPrefix(){
+					const stack=document.querySelector('.options-stack');
+					if(!stack) return;
+					const wrap=document.createElement('label');
+					wrap.className='chk prefix-wrap';
+					wrap.style.alignItems='flex-start';
+					wrap.innerHTML=`<span style="display:inline-flex;align-items:center;gap:8px;">
+						<input type="checkbox" id="optPrefix" /> <span>Prefix</span>
+					</span>
+					<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:8px;">
+						<input type="number" min="1" max="32" id="prefixLen" style="width:60px;background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;" placeholder="#" />
+						<select id="prefixType" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;">
+							<option value="uppercase">Uppercase</option>
+							<option value="lowercase">Lowercase</option>
+							<option value="symbols">Symbols</option>
+							<option value="random" selected>Random</option>
+						</select>
+					</div>`;
+					stack.appendChild(wrap);
+					const optPrefix=document.getElementById('optPrefix');
+					const prefixLen=document.getElementById('prefixLen');
+					const prefixType=document.getElementById('prefixType');
+					function syncPrefix(){
+						window.__prefixEnabled=!!optPrefix.checked;
+						const len=parseInt(prefixLen.value,10)||0;
+						window.__prefixConfig={enabled:window.__prefixEnabled,length:len,type:prefixType.value};
+						if(optSavePrefs.checked) savePrefs();
+					}
+					['change','input'].forEach(evt=>{ optPrefix.addEventListener(evt,syncPrefix); prefixLen.addEventListener(evt,syncPrefix); prefixType.addEventListener(evt,syncPrefix); });
+					// Populate from loaded prefs if available
+					if(window.__prefixConfig){
+						optPrefix.checked=!!window.__prefixConfig.enabled;
+						if(window.__prefixConfig.length) prefixLen.value=window.__prefixConfig.length;
+						if(window.__prefixConfig.type) prefixType.value=window.__prefixConfig.type;
+					}
+					syncPrefix();
+					function applyModeVisibility(){
+						wrap.style.display= (modeSelect.value==='password')? 'inline-flex':'none';
+					}
+					modeSelect.addEventListener('change',()=>{ applyModeVisibility(); if(optSavePrefs.checked) savePrefs(); });
+					applyModeVisibility();
+				})();
 				if(optSavePrefs){
 					optSavePrefs.addEventListener('change',()=>{
 						if(optSavePrefs.checked){ savePrefs(); }
