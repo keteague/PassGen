@@ -442,24 +442,23 @@
 					}
 					if(!raw) return;
 					try{ const d=JSON.parse(raw);
-						// If cookie/localStorage only stores the disabled save flag, do not overwrite defaults
-						if(d.save===false){ optSavePrefs.checked=false; }
-						optUpper.checked=!!d.upper; 
-						optLower.checked=!!d.lower; 
-						optNums.checked=!!d.nums; 
-						optSpace.checked=!!d.space; 
-						optSymbols.checked=!!d.symbols;
-						optBeginLetter.checked=!!d.begin; 
-						optNoSimilar.checked=!!d.sim; 
-						optNoDuplicates.checked=!!d.nodup; 
-						optNoSequential.checked=!!d.noseq;
-						if(typeof d.symbolSet==='string'){ symbolsText.value=d.symbolSet; sanitizeSymbols(); }
-						if(d.length) lengthInput.value=d.length; 
-						if(d.count) countInput.value=d.count;
-						if(d.lengthMode){ lengthMode.value=d.lengthMode; }
-						if(typeof d.lengthMin!== 'undefined') lengthMin.value=d.lengthMin;
-						if(typeof d.lengthMax!== 'undefined') lengthMax.value=d.lengthMax;
-						if(typeof d.save!== 'undefined') optSavePrefs.checked=!!d.save;
+						if(Object.keys(d).length===1 && d.save===false){ optSavePrefs.checked=false; return; }
+						if('save' in d) optSavePrefs.checked=!!d.save;
+						if('upper' in d) optUpper.checked=!!d.upper; 
+						if('lower' in d) optLower.checked=!!d.lower; 
+						if('nums' in d) optNums.checked=!!d.nums; 
+						if('space' in d) optSpace.checked=!!d.space; 
+						if('symbols' in d) optSymbols.checked=!!d.symbols;
+						if('begin' in d) optBeginLetter.checked=!!d.begin; 
+						if('sim' in d) optNoSimilar.checked=!!d.sim; 
+						if('nodup' in d) optNoDuplicates.checked=!!d.nodup; 
+						if('noseq' in d) optNoSequential.checked=!!d.noseq;
+						if('symbolSet' in d && typeof d.symbolSet==='string'){ symbolsText.value=d.symbolSet; sanitizeSymbols(); }
+						if('length' in d && d.length) lengthInput.value=d.length; 
+						if('count' in d && d.count) countInput.value=d.count;
+						if('lengthMode' in d && d.lengthMode){ lengthMode.value=d.lengthMode; }
+						if('lengthMin' in d) lengthMin.value=d.lengthMin;
+						if('lengthMax' in d) lengthMax.value=d.lengthMax;
 						// Recompute mode visibility
 						lengthMode.dispatchEvent(new Event('change'));
 						validate();
