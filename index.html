@@ -43,7 +43,7 @@
 							</label>
 							<div class="error" id="lengthError" role="alert" aria-live="polite"></div>
 						</div>
-						<div class="field count-field" style="max-width:120px;align-self:flex-end;">
+						<div class="field count-field" style="max-width:120px;">
 							<label for="countInput" class="label-inline-head">
 								<span class="label-row">Count <span class="req" aria-hidden="true">*</span>
 									<span class="info-wrap"><button type="button" class="info-btn" id="countInfo" aria-label="Number of passwords information" aria-expanded="false">i</button>
@@ -147,7 +147,7 @@
 			.mini-btn{background:#243447;border:1px solid #355168;color:#cbd5e1;font:600 .55rem/1 system-ui;padding:5px 8px;border-radius:6px;cursor:pointer;}
 			.mini-btn:hover{background:#2e4258;}
 			.settings-row{display:flex;gap:28px;flex-wrap:wrap;}
-			.count-field{margin-top:4px;}
+			.count-field{margin-top:0;}
 			.collapse-btn{background:none;border:none;color:#e2e8f0;font:600 .75rem/1 system-ui;letter-spacing:1px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:0;}
 			.collapse-btn[aria-expanded='true']::before{content:'▼';font-size:.75rem;}
 			.collapse-btn[aria-expanded='false']::before{content:'►';font-size:.75rem;}
@@ -169,6 +169,7 @@
 			.field .label-row{display:inline-flex;align-items:center;gap:6px;min-height:var(--settings-head-h);}
 			.settings-row{align-items:flex-start;}
 			.count-field{align-self:auto !important;}
+			.count-field{margin-top:0 !important;}
 		</style>
 		<script>
 			(function(){
