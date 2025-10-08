@@ -389,25 +389,54 @@
 				function savePrefs(){
 					if(!optSavePrefs?.checked) return;
 					const data={
-						upper:!!optUpper.checked,lower:!!optLower.checked,nums:!!optNums.checked,space:!!optSpace.checked,symbols:!!optSymbols.checked,
-						begin:!!optBeginLetter.checked,sim:!!optNoSimilar.checked,nodup:!!optNoDuplicates.checked,noseq:!!optNoSequential.checked,
-						symbolSet:symbolsText.value, length:lengthInput.value, count:countInput.value
+						upper:!!optUpper.checked,
+						lower:!!optLower.checked,
+						nums:!!optNums.checked,
+						space:!!optSpace.checked,
+						symbols:!!optSymbols.checked,
+						begin:!!optBeginLetter.checked,
+						sim:!!optNoSimilar.checked,
+						nodup:!!optNoDuplicates.checked,
+						noseq:!!optNoSequential.checked,
+						symbolSet:symbolsText.value,
+						lengthMode:lengthMode.value,
+						length:lengthInput.value,
+						lengthMin:lengthMin.value,
+						lengthMax:lengthMax.value,
+						count:countInput.value,
+						save:!!optSavePrefs.checked
 					};
 					setCookie('passgen_prefs', JSON.stringify(data));
 				}
 				function loadPrefs(){
 					const raw=getCookie('passgen_prefs'); if(!raw) return;
 					try{ const d=JSON.parse(raw);
-						optUpper.checked=d.upper; optLower.checked=d.lower; optNums.checked=d.nums; optSpace.checked=d.space; optSymbols.checked=d.symbols;
-						optBeginLetter.checked=d.begin; optNoSimilar.checked=d.sim; optNoDuplicates.checked=d.nodup; optNoSequential.checked=d.noseq;
+						optUpper.checked=!!d.upper; 
+						optLower.checked=!!d.lower; 
+						optNums.checked=!!d.nums; 
+						optSpace.checked=!!d.space; 
+						optSymbols.checked=!!d.symbols;
+						optBeginLetter.checked=!!d.begin; 
+						optNoSimilar.checked=!!d.sim; 
+						optNoDuplicates.checked=!!d.nodup; 
+						optNoSequential.checked=!!d.noseq;
 						if(typeof d.symbolSet==='string'){ symbolsText.value=d.symbolSet; sanitizeSymbols(); }
-						if(d.length) lengthInput.value=d.length; if(d.count) countInput.value=d.count;
+						if(d.length) lengthInput.value=d.length; 
+						if(d.count) countInput.value=d.count;
+						if(d.lengthMode){ lengthMode.value=d.lengthMode; }
+						if(typeof d.lengthMin!== 'undefined') lengthMin.value=d.lengthMin;
+						if(typeof d.lengthMax!== 'undefined') lengthMax.value=d.lengthMax;
+						if(typeof d.save!== 'undefined') optSavePrefs.checked=!!d.save;
+						// Recompute mode visibility
+						lengthMode.dispatchEvent(new Event('change'));
+						validate();
+						validateCount();
 						syncSymbols();
 					}catch(e){}
 				}
 				if(optSavePrefs){ optSavePrefs.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
 				['change','input'].forEach(ev=> document.addEventListener(ev,(e)=>{
-					if(e.target && (e.target.matches('#options input')|| e.target===symbolsText)) savePrefs();
+					if(e.target && (e.target.matches('#options input')|| e.target===symbolsText || e.target===lengthInput || e.target===lengthMin || e.target===lengthMax || e.target===lengthMode || e.target===countInput)) savePrefs();
 				},{capture:true}));
 				loadPrefs();
 				// Collapse controls
