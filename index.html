@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Password Generator</title>
+	<style>
+		body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;margin:0;padding:40px;line-height:1.4;background:#0f172a;color:#f1f5f9;}
+		h1{margin:0 0 24px;font-size:2rem;font-weight:600;}
+		.container{max-width:900px;margin:0 auto;}
+		.note{font-size:.85rem;color:#94a3b8;margin-top:12px;}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.0.2</small></h1>
+			<main id="main">
+				<section id="settings" class="subsection">
+					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
+					<div class="section-body">
+					<form id="settingsForm" novalidate class="settings-row">
+						<div class="field" style="max-width:140px;">
+							<label for="lengthInput" class="label-inline-head">
+								<span class="label-row">Length <span class="req" aria-hidden="true">*</span>
+									<span class="info-wrap"><button type="button" class="info-btn" id="lengthInfo" aria-label="Password length information" aria-expanded="false">i</button>
+										<span id="lengthTip" role="tooltip" class="tooltip hidden">Total number of characters the generated password will contain.</span>
+									</span>
+								</span>
+								<input id="lengthInput" name="length" type="number" inputmode="numeric" pattern="\\d+" required min="1" max="999" value="16" class="len-narrow" />
+							</label>
+							<div class="error" id="lengthError" role="alert" aria-live="polite"></div>
+						</div>
+						<div class="field" style="max-width:140px;">
+							<label for="countInput" class="label-inline-head">
+								<span class="label-row">Count <span class="req" aria-hidden="true">*</span>
+									<span class="info-wrap"><button type="button" class="info-btn" id="countInfo" aria-label="Number of passwords information" aria-expanded="false">i</button>
+										<span id="countTip" role="tooltip" class="tooltip hidden">Number of passwords to generate (1-9999).</span>
+									</span>
+								</span>
+								<input id="countInput" name="count" type="number" inputmode="numeric" pattern="\\d+" required min="1" max="9999" value="1" class="len-narrow" />
+							</label>
+							<div class="error" id="countError" role="alert" aria-live="polite"></div>
+						</div>
+					</form>
+					</div>
+				</section>
+
+				<section id="options" class="subsection">
+					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">OPTIONS</button></h2>
+					<div class="section-body">
+					<div class="options-stack">
+						<label class="chk"><input type="checkbox" id="optUpper" checked /> <span>Uppercase letters</span></label>
+						<label class="chk"><input type="checkbox" id="optLower" checked /> <span>Lowercase letters</span></label>
+						<label class="chk"><input type="checkbox" id="optNums" checked /> <span>Numbers</span></label>
+						<label class="chk"><input type="checkbox" id="optSpace" /> <span>Whitespace</span></label>
+						<label class="chk sym" style="align-items:flex-start;gap:10px;flex-wrap:wrap;">
+							<span style="display:inline-flex;align-items:center;gap:8px;">
+								<input type="checkbox" id="optSymbols" checked /> <span>Symbols</span>
+							</span>
+							<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+								<input type="text" id="symbolsText" class="symbols-text" maxlength="64" />
+								<button type="button" id="symbolsReset" class="mini-btn" aria-label="Reset symbols">Reset</button>
+							</div>
+						</label>
+					</div>
+					<div class="error" id="symbolsError" role="alert" aria-live="polite" style="margin-top:6px;"></div>
+					</div>
+				</section>
+				<section id="passwords" class="subsection">
+					<h2 class="subheading pw-head"><button type="button" class="collapse-btn" aria-expanded="true">PASSWORDS</button></h2>
+					<div class="section-body">
+					<div class="pw-actions" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+						<button type="button" id="generateBtn" class="gen-btn">Generate</button>
+						<span id="genStatus" class="gen-status" aria-live="polite"></span>
+					</div>
+					<ol id="pwOutput" class="pw-list" aria-live="polite"></ol>
+					</div>
+				</section>
+			</main>
+	</div>
+		<style>
+			.subsection{margin-top:10px;padding:18px 18px 24px;border:1px solid #203042;border-radius:14px;background:#132236;position:relative;} 
+			.subheading{margin:0 0 14px;font:600 .8rem/1 system-ui;letter-spacing:1.2px;text-transform:uppercase;}
+			.subheading{background:#1d3145;color:#e2e8f0;padding:10px 14px;border:1px solid #27435a;border-radius:10px;display:flex;align-items:center;}
+			.field{display:flex;flex-direction:column;gap:6px;max-width:300px;}
+			.field label{font-size:.8rem;font-weight:600;display:flex;flex-direction:column;gap:6px;}
+			.field input{background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:8px 10px;font:600 .8rem/1 system-ui;border-radius:10px;outline:none;}
+			.len-narrow{width:100px;}
+			.field input:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb40;}
+			.error{font-size:.65rem;color:#f87171;min-height:14px;}
+			.req{color:#f87171;margin-left:4px;}
+			.label-row{display:inline-flex;align-items:center;gap:6px;}
+			.info-btn{background:#1e2e40;border:1px solid #2b4258;color:#a5b4c6;font:600 .6rem/1 system-ui;padding:4px 6px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+			.info-btn:hover{background:#25405c;color:#fff;}
+			.info-wrap{position:relative;display:inline-flex;}
+			.tooltip{position:absolute;top:100%;left:0;z-index:10;margin-top:6px;background:#0b1624;border:1px solid #2c4256;padding:8px 10px;font-size:.62rem;line-height:1.2;border-radius:8px;max-width:240px;color:#cbd5e1;box-shadow:0 6px 18px -6px rgba(0,0,0,.6);width:max-content;}
+			.hidden{display:none!important;}
+			.pw-output{margin-top:16px;font:600 .95rem/1.2 ui-monospace,Consolas,monospace;background:#0b1624;border:1px solid #203042;padding:14px 16px;border-radius:12px;min-height:48px;word-break:break-all;}
+			.pw-list{counter-reset:pw;list-style:none;margin:16px 0 0;padding:0 0 0 54px;display:flex;flex-direction:column;gap:10px;position:relative;}
+			.pw-list li{counter-increment:pw;background:#0b1624;border:1px solid #203042;padding:10px 14px 10px 14px;border-radius:11px;font:600 .8rem/1.15 ui-monospace,Consolas,monospace;display:flex;align-items:center;position:relative;}
+			.pw-list li::before{content:counter(pw) '.';color:#94a3b8;font-weight:500;margin-right:10px;}
+			.copy-icon{position:absolute;left:-46px;top:50%;transform:translateY(-50%);background:#1e2e40;border:1px solid #2b4258;color:#cbd5e1;font:600 .55rem/1 system-ui;padding:5px 7px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+			.copy-icon:hover{background:#25405c;color:#fff;}
+			.options-grid{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;}
+			.options-stack{display:flex;flex-direction:column;gap:12px;}
+			.chk{font-size:.7rem;display:inline-flex;align-items:center;gap:8px;}
+			.chk input[type=checkbox]{width:16px;height:16px;}
+			.symbols-text{background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .65rem/1.1 ui-monospace,Consolas,monospace;border-radius:8px;width:260px;}
+			.symbols-text:disabled{opacity:.5;}
+			.mini-btn{background:#243447;border:1px solid #355168;color:#cbd5e1;font:600 .55rem/1 system-ui;padding:5px 8px;border-radius:6px;cursor:pointer;}
+			.mini-btn:hover{background:#2e4258;}
+			.settings-row{display:flex;gap:28px;flex-wrap:wrap;}
+			.collapse-btn{background:none;border:none;color:#e2e8f0;font:600 .75rem/1 system-ui;letter-spacing:1px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:0;}
+			.collapse-btn[aria-expanded='true']::before{content:'▼';font-size:.75rem;}
+			.collapse-btn[aria-expanded='false']::before{content:'►';font-size:.75rem;}
+			.section-body{margin-top:10px;}
+			.gen-btn{background:#2563eb;border:1px solid #1d4ed8;color:#f1f5f9;padding:10px 18px;font:600 .75rem/1 system-ui;border-radius:10px;cursor:pointer;}
+			.gen-btn:hover{filter:brightness(1.1);}
+			.gen-status{font-size:.6rem;color:#94a3b8;}
+			.count-row{display:inline-flex;align-items:center;gap:6px;font-size:.55rem;letter-spacing:1px;text-transform:uppercase;color:#94a3b8;background:#0b1624;padding:6px 10px;border:1px solid #203042;border-radius:10px;font-weight:600;}
+			.count-narrow{width:70px;padding:6px 8px;font:600 .65rem/1 system-ui;border-radius:8px;background:#09111d;border:1px solid #2c4256;color:#f1f5f9;}
+			.pw-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;}
+			/* Space for copy icons visually */
+			.pw-list .copy-icon:focus{outline:2px solid #2563eb;outline-offset:2px;}
+		</style>
+		<script>
+			(function(){
+				const lengthInput=document.getElementById('lengthInput');
+				const error=document.getElementById('lengthError');
+				const infoBtn=document.getElementById('lengthInfo');
+				const tip=document.getElementById('lengthTip');
+				const genBtn=document.getElementById('generateBtn');
+				const pwOutput=document.getElementById('pwOutput');
+				const genStatus=document.getElementById('genStatus');
+				const countInput=document.getElementById('countInput');
+				const countInfo=document.getElementById('countInfo');
+				const countTip=document.getElementById('countTip');
+				const countError=document.getElementById('countError');
+				const optUpper=document.getElementById('optUpper');
+				const optLower=document.getElementById('optLower');
+				const optSymbols=document.getElementById('optSymbols');
+				const optNums=document.getElementById('optNums');
+				const optSpace=document.getElementById('optSpace');
+				const symbolsText=document.getElementById('symbolsText');
+				const symbolsReset=document.getElementById('symbolsReset');
+				const symbolsError=document.getElementById('symbolsError');
+				if(!lengthInput) return;
+				function validate(){
+					let v=lengthInput.value.trim();
+					// Strip non-digits proactively
+					if(/[^\d]/.test(v)){ v=v.replace(/[^\d]/g,''); lengthInput.value=v; }
+					if(!v){ error.textContent='Length is required.'; return false; }
+					const num=parseInt(v,10);
+					if(isNaN(num)){ error.textContent='Enter a numeric value.'; return false; }
+					if(num<1){ error.textContent='Minimum is 1.'; return false; }
+					if(num>999){ error.textContent='Maximum is 999.'; return false; }
+					error.textContent=''; return true;
+				}
+				['input','blur'].forEach(evt=> lengthInput.addEventListener(evt,validate));
+				if(infoBtn && tip){
+					function show(){ tip.classList.remove('hidden'); infoBtn.setAttribute('aria-expanded','true'); }
+					function hide(){ tip.classList.add('hidden'); infoBtn.setAttribute('aria-expanded','false'); }
+					infoBtn.addEventListener('click',e=>{ e.stopPropagation(); tip.classList.contains('hidden')?show():hide(); });
+					infoBtn.addEventListener('mouseenter',show);
+					infoBtn.addEventListener('mouseleave',hide);
+					window.addEventListener('click',hide);
+				}
+				function randChar(pool){ return pool[Math.floor(Math.random()*pool.length)]; }
+				const BASE_DIGITS='0123456789';
+				const DEFAULT_SYMBOLS="!\";$%&'()*+,-./:;<=>?@[]^_`{|}~";
+				function sanitizeSymbols(){
+					if(!symbolsText) return '';
+					let raw=[...symbolsText.value];
+					// Remove spaces and duplicates while preserving first occurrence
+					const seen=new Set();
+					const filtered=[];
+					for(const ch of raw){
+						if(ch===' '|| ch==='\t' || ch==='\n') continue;
+						if(!seen.has(ch)) { seen.add(ch); filtered.push(ch); }
+					}
+					symbolsText.value=filtered.join('');
+					return symbolsText.value;
+				}
+				function buildPool(){
+					let pool='';
+					if(optLower?.checked) pool+= 'abcdefghijklmnopqrstuvwxyz';
+					if(optUpper?.checked) pool+= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+					if(optNums?.checked) pool+= BASE_DIGITS;
+					if(optSpace?.checked) pool+= ' ';
+					if(optSymbols?.checked){ pool+= sanitizeSymbols(); }
+					return pool;
+				}
+				function generatePassword(len){ const pool=buildPool(); let out=''; for(let i=0;i<len;i++) out+=randChar(pool); return out; }
+				function validateCount(){
+					if(!countInput) return true;
+					let v=countInput.value.trim();
+					if(/[^\d]/.test(v)){ v=v.replace(/[^\d]/g,''); countInput.value=v; }
+					if(!v){ countError.textContent='Count required.'; return false; }
+					const num=parseInt(v,10);
+					if(isNaN(num) || num<1){ countError.textContent='Minimum is 1.'; return false; }
+					if(num>9999){ countError.textContent='Maximum is 9999.'; return false; }
+					countError.textContent=''; return true;
+				}
+				function doGenerate(){
+					if(!validate() || !validateCount()) return;
+					if(optSymbols && optSymbols.checked) sanitizeSymbols();
+					const symbolSet = symbolsText? symbolsText.value: '';
+					if(optSymbols?.checked && !symbolSet){ symbolsError.textContent='Symbols list empty.'; return; } else { symbolsError.textContent=''; }
+					let pool=buildPool();
+					if(!pool){ symbolsError.textContent='No character classes selected.'; return; }
+					const n=parseInt(lengthInput.value,10);
+					const c=countInput? parseInt(countInput.value,10):1;
+					const list=[]; for(let i=0;i<c;i++) list.push(generatePassword(n));
+					if(pwOutput){
+						pwOutput.innerHTML='';
+						list.forEach(pw=>{ const li=document.createElement('li'); const copy=document.createElement('button'); copy.type='button'; copy.className='copy-icon'; copy.textContent='⧉'; const span=document.createElement('span'); span.textContent=pw; copy.addEventListener('click',()=>{ navigator.clipboard.writeText(pw).then(()=>{ copy.textContent='✔'; setTimeout(()=>copy.textContent='⧉',900); }); }); li.append(span, copy); pwOutput.appendChild(li); });
+					}
+					if(genStatus) genStatus.textContent=`Generated ${list.length} password${list.length!==1?'s':''} (len ${n})`;
+				}
+				if(genBtn) genBtn.addEventListener('click',doGenerate);
+				if(symbolsText && !symbolsText.value){ symbolsText.value=DEFAULT_SYMBOLS; }
+				if(symbolsReset && symbolsText){ symbolsReset.addEventListener('click',()=>{ symbolsText.value=DEFAULT_SYMBOLS; sanitizeSymbols(); }); }
+				if(optSymbols && symbolsText){
+					function syncSymbols(){ symbolsText.disabled=!optSymbols.checked; symbolsText.classList.toggle('disabled',!optSymbols.checked); if(!optSymbols.checked) symbolsError.textContent=''; }
+					optSymbols.addEventListener('change',syncSymbols); syncSymbols();
+				}
+				// Collapse controls
+				[...document.querySelectorAll('.collapse-btn')].forEach(btn=>{
+					btn.addEventListener('click',()=>{
+						const expanded=btn.getAttribute('aria-expanded')==='true';
+						btn.setAttribute('aria-expanded', String(!expanded));
+						const section=btn.closest('.subsection');
+						const body=section?.querySelector('.section-body');
+						if(body){ body.style.display = expanded? 'none':'block'; }
+					});
+				});
+				['input','blur'].forEach(evt=> countInput && countInput.addEventListener(evt,validateCount));
+				if(countInfo && countTip){
+					function showC(){ countTip.classList.remove('hidden'); countInfo.setAttribute('aria-expanded','true'); }
+					function hideC(){ countTip.classList.add('hidden'); countInfo.setAttribute('aria-expanded','false'); }
+					countInfo.addEventListener('click',e=>{ e.stopPropagation(); countTip.classList.contains('hidden')?showC():hideC(); });
+					countInfo.addEventListener('mouseenter',showC);
+					countInfo.addEventListener('mouseleave',hideC);
+					window.addEventListener('click',hideC);
+				}
+				validate();
+			})();
+		</script>
+</body>
+</html>
