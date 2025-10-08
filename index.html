@@ -19,24 +19,26 @@
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
 					<div class="section-body">
 					<form id="settingsForm" novalidate class="settings-row">
-						<div class="field" style="max-width:220px;">
-							<label class="label-inline-head">
-								<span class="label-row">Length Mode <span class="req" aria-hidden="true">*</span>
-									<span class="info-wrap"><button type="button" class="info-btn" id="lengthInfo" aria-label="Password length information" aria-expanded="false">i</button>
-										<span id="lengthTip" role="tooltip" class="tooltip hidden">Choose fixed Length or a Range. Range generates variable length passwords within the min/max.</span>
+						<div class="field" style="max-width:250px;">
+							<label class="label-inline-head" style="display:flex;flex-direction:column;gap:6px;">
+								<div class="label-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+									<span>Length Mode <span class="req" aria-hidden="true">*</span>
+										<span class="info-wrap"><button type="button" class="info-btn" id="lengthInfo" aria-label="Password length information" aria-expanded="false">i</button>
+											<span id="lengthTip" role="tooltip" class="tooltip hidden">Choose Static or Range. Range generates variable length passwords within the min/max.</span>
+										</span>
 									</span>
-								</span>
-								<select id="lengthMode" class="len-mode-select">
-									<option value="fixed" selected>Length</option>
-									<option value="range">Range</option>
-								</select>
-								<div class="length-fixed-group" style="margin-top:8px;display:flex;align-items:center;gap:6px;">
-									<input id="lengthInput" name="length" type="number" inputmode="numeric" pattern="\\d+" required min="1" max="999" value="16" class="len-narrow" />
+									<select id="lengthMode" class="len-mode-select">
+										<option value="fixed" selected>Static</option>
+										<option value="range">Range</option>
+									</select>
 								</div>
-								<div class="length-range-group" style="margin-top:8px;display:none;align-items:center;gap:6px;">
-									<input id="lengthMin" type="number" inputmode="numeric" pattern="\\d+" min="1" max="999" value="12" class="len-narrow" aria-label="Minimum length" />
+								<div class="length-fixed-group" style="margin-top:4px;display:flex;align-items:center;gap:6px;">
+									<input id="lengthInput" name="length" type="number" inputmode="numeric" pattern="\\d+" required min="1" max="9999" value="16" class="len-narrow" />
+								</div>
+								<div class="length-range-group" style="margin-top:4px;display:none;align-items:center;gap:6px;">
+									<input id="lengthMin" type="number" inputmode="numeric" pattern="\\d+" min="1" max="9999" value="12" class="len-narrow" aria-label="Minimum length" />
 									<span style="font-size:.65rem;color:#94a3b8;">to</span>
-									<input id="lengthMax" type="number" inputmode="numeric" pattern="\\d+" min="1" max="999" value="16" class="len-narrow" aria-label="Maximum length" />
+									<input id="lengthMax" type="number" inputmode="numeric" pattern="\\d+" min="1" max="9999" value="16" class="len-narrow" aria-label="Maximum length" />
 								</div>
 							</label>
 							<div class="error" id="lengthError" role="alert" aria-live="polite"></div>
@@ -105,7 +107,7 @@
 			.field label{font-size:.8rem;font-weight:600;display:flex;flex-direction:column;gap:6px;}
 			.field input{background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:8px 10px;font:600 .8rem/1 system-ui;border-radius:10px;outline:none;}
 			.len-mode-select{background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 10px;font:600 .7rem/1 system-ui;border-radius:10px;}
-			.len-narrow{width:100px;}
+			.len-narrow{width:78px;padding:8px 8px;font-variant-numeric:tabular-nums;}
 			.field input:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb40;}
 			.error{font-size:.65rem;color:#f87171;min-height:14px;}
 			.req{color:#f87171;margin-left:4px;}
@@ -185,7 +187,7 @@
 						const num=parseInt(v,10);
 						if(isNaN(num)){ error.textContent='Enter a numeric value.'; return false; }
 						if(num<1){ error.textContent='Minimum is 1.'; return false; }
-						if(num>999){ error.textContent='Maximum is 999.'; return false; }
+						if(num>9999){ error.textContent='Maximum is 9999.'; return false; }
 						error.textContent=''; return true;
 					}else{
 						let a=lengthMin.value.trim(); let b=lengthMax.value.trim();
@@ -195,7 +197,7 @@
 						const amin=parseInt(a,10), bmax=parseInt(b,10);
 						if(isNaN(amin)||isNaN(bmax)){ error.textContent='Enter numeric values.'; return false; }
 						if(amin<1){ error.textContent='Minimum is 1.'; return false; }
-						if(bmax>999){ error.textContent='Maximum is 999.'; return false; }
+						if(bmax>9999){ error.textContent='Maximum is 9999.'; return false; }
 						if(amin>bmax){ error.textContent='Min cannot exceed max.'; return false; }
 						error.textContent=''; return true;
 					}
@@ -298,7 +300,7 @@
 						list.forEach(pw=>{ const li=document.createElement('li'); const copy=document.createElement('button'); copy.type='button'; copy.className='copy-icon'; copy.textContent='⧉'; const span=document.createElement('span'); span.textContent=pw; const cb=document.createElement('input'); cb.type='checkbox'; cb.className='pw-select'; cb.setAttribute('aria-label','Select password'); copy.addEventListener('click',()=>{ navigator.clipboard.writeText(pw).then(()=>{ copy.textContent='✔'; setTimeout(()=>copy.textContent='⧉',900); }); }); li.append(cb, span, copy); pwOutput.appendChild(li); });
 						updateSelectAllButton();
 					}
-					if(genStatus) genStatus.textContent=`Generated ${list.length} password${list.length!==1?'s':''} (len ${n})`;
+					if(genStatus) genStatus.textContent=`Generated ${list.length} password${list.length!==1?'s':''}`;
 				}
 				if(genBtn) genBtn.addEventListener('click',doGenerate);
 				if(symbolsText && !symbolsText.value){ symbolsText.value=DEFAULT_SYMBOLS; }
