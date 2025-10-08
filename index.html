@@ -13,20 +13,31 @@
 </head>
 <body>
 	<div class="container">
-		<h1>Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.0.3</small></h1>
+		<h1>Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.0.4</small></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
 					<div class="section-body">
 					<form id="settingsForm" novalidate class="settings-row">
-						<div class="field" style="max-width:140px;">
-							<label for="lengthInput" class="label-inline-head">
-								<span class="label-row">Length <span class="req" aria-hidden="true">*</span>
+						<div class="field" style="max-width:220px;">
+							<label class="label-inline-head">
+								<span class="label-row">Length Mode <span class="req" aria-hidden="true">*</span>
 									<span class="info-wrap"><button type="button" class="info-btn" id="lengthInfo" aria-label="Password length information" aria-expanded="false">i</button>
-										<span id="lengthTip" role="tooltip" class="tooltip hidden">Total number of characters the generated password will contain.</span>
+										<span id="lengthTip" role="tooltip" class="tooltip hidden">Choose fixed Length or a Range. Range generates variable length passwords within the min/max.</span>
 									</span>
 								</span>
-								<input id="lengthInput" name="length" type="number" inputmode="numeric" pattern="\\d+" required min="1" max="999" value="16" class="len-narrow" />
+								<select id="lengthMode" class="len-mode-select">
+									<option value="fixed" selected>Length</option>
+									<option value="range">Range</option>
+								</select>
+								<div class="length-fixed-group" style="margin-top:8px;display:flex;align-items:center;gap:6px;">
+									<input id="lengthInput" name="length" type="number" inputmode="numeric" pattern="\\d+" required min="1" max="999" value="16" class="len-narrow" />
+								</div>
+								<div class="length-range-group" style="margin-top:8px;display:none;align-items:center;gap:6px;">
+									<input id="lengthMin" type="number" inputmode="numeric" pattern="\\d+" min="1" max="999" value="12" class="len-narrow" aria-label="Minimum length" />
+									<span style="font-size:.65rem;color:#94a3b8;">to</span>
+									<input id="lengthMax" type="number" inputmode="numeric" pattern="\\d+" min="1" max="999" value="16" class="len-narrow" aria-label="Maximum length" />
+								</div>
 							</label>
 							<div class="error" id="lengthError" role="alert" aria-live="polite"></div>
 						</div>
@@ -76,6 +87,9 @@
 					<div class="section-body">
 					<div class="pw-actions" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
 						<button type="button" id="generateBtn" class="gen-btn">Generate</button>
+						<button type="button" id="copyAllBtn" class="mini-btn">Copy All</button>
+						<button type="button" id="selectAllBtn" class="mini-btn">Select All</button>
+						<button type="button" id="downloadBtn" class="mini-btn">Download</button>
 						<span id="genStatus" class="gen-status" aria-live="polite"></span>
 					</div>
 					<ol id="pwOutput" class="pw-list" aria-live="polite"></ol>
@@ -90,6 +104,7 @@
 			.field{display:flex;flex-direction:column;gap:6px;max-width:300px;}
 			.field label{font-size:.8rem;font-weight:600;display:flex;flex-direction:column;gap:6px;}
 			.field input{background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:8px 10px;font:600 .8rem/1 system-ui;border-radius:10px;outline:none;}
+			.len-mode-select{background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 10px;font:600 .7rem/1 system-ui;border-radius:10px;}
 			.len-narrow{width:100px;}
 			.field input:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb40;}
 			.error{font-size:.65rem;color:#f87171;min-height:14px;}
@@ -105,9 +120,10 @@
 			.hidden{display:none!important;}
 			.pw-output{margin-top:16px;font:600 .95rem/1.2 ui-monospace,Consolas,monospace;background:#0b1624;border:1px solid #203042;padding:14px 16px;border-radius:12px;min-height:48px;word-break:break-all;}
 			.pw-list{counter-reset:pw;list-style:none;margin:16px 0 0;padding:0 0 0 54px;display:flex;flex-direction:column;gap:10px;position:relative;}
-			.pw-list li{counter-increment:pw;background:#0b1624;border:1px solid #203042;padding:10px 14px 10px 14px;border-radius:11px;font:600 .8rem/1.15 ui-monospace,Consolas,monospace;display:flex;align-items:center;position:relative;}
+			.pw-list li{counter-increment:pw;background:#0b1624;border:1px solid #203042;padding:10px 14px 10px 14px;border-radius:11px;font:600 .8rem/1.15 ui-monospace,Consolas,monospace;display:flex;align-items:center;position:relative;gap:12px;}
 			.pw-list li::before{content:counter(pw) '.';color:#94a3b8;font-weight:500;margin-right:10px;}
 			.copy-icon{position:absolute;left:-46px;top:50%;transform:translateY(-50%);background:#1e2e40;border:1px solid #2b4258;color:#cbd5e1;font:600 .55rem/1 system-ui;padding:5px 7px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+			.pw-select{width:16px;height:16px;cursor:pointer;}
 			.copy-icon:hover{background:#25405c;color:#fff;}
 			.options-grid{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;}
 			.options-stack{display:flex;flex-direction:column;gap:12px;}
@@ -134,6 +150,9 @@
 		<script>
 			(function(){
 				const lengthInput=document.getElementById('lengthInput');
+				const lengthMode=document.getElementById('lengthMode');
+				const lengthMin=document.getElementById('lengthMin');
+				const lengthMax=document.getElementById('lengthMax');
 				const error=document.getElementById('lengthError');
 				const infoBtn=document.getElementById('lengthInfo');
 				const tip=document.getElementById('lengthTip');
@@ -159,17 +178,38 @@
 				const symbolsError=document.getElementById('symbolsError');
 				if(!lengthInput) return;
 				function validate(){
-					let v=lengthInput.value.trim();
-					// Strip non-digits proactively
-					if(/[^\d]/.test(v)){ v=v.replace(/[^\d]/g,''); lengthInput.value=v; }
-					if(!v){ error.textContent='Length is required.'; return false; }
-					const num=parseInt(v,10);
-					if(isNaN(num)){ error.textContent='Enter a numeric value.'; return false; }
-					if(num<1){ error.textContent='Minimum is 1.'; return false; }
-					if(num>999){ error.textContent='Maximum is 999.'; return false; }
-					error.textContent=''; return true;
+					if(lengthMode.value==='fixed'){
+						let v=lengthInput.value.trim();
+						if(/[^\d]/.test(v)){ v=v.replace(/[^\d]/g,''); lengthInput.value=v; }
+						if(!v){ error.textContent='Length is required.'; return false; }
+						const num=parseInt(v,10);
+						if(isNaN(num)){ error.textContent='Enter a numeric value.'; return false; }
+						if(num<1){ error.textContent='Minimum is 1.'; return false; }
+						if(num>999){ error.textContent='Maximum is 999.'; return false; }
+						error.textContent=''; return true;
+					}else{
+						let a=lengthMin.value.trim(); let b=lengthMax.value.trim();
+						if(/[^\d]/.test(a)){ a=a.replace(/[^\d]/g,''); lengthMin.value=a; }
+						if(/[^\d]/.test(b)){ b=b.replace(/[^\d]/g,''); lengthMax.value=b; }
+						if(!a||!b){ error.textContent='Both min and max required.'; return false; }
+						const amin=parseInt(a,10), bmax=parseInt(b,10);
+						if(isNaN(amin)||isNaN(bmax)){ error.textContent='Enter numeric values.'; return false; }
+						if(amin<1){ error.textContent='Minimum is 1.'; return false; }
+						if(bmax>999){ error.textContent='Maximum is 999.'; return false; }
+						if(amin>bmax){ error.textContent='Min cannot exceed max.'; return false; }
+						error.textContent=''; return true;
+					}
 				}
 				['input','blur'].forEach(evt=> lengthInput.addEventListener(evt,validate));
+				['input','blur'].forEach(evt=> lengthMin && lengthMin.addEventListener(evt,validate));
+				['input','blur'].forEach(evt=> lengthMax && lengthMax.addEventListener(evt,validate));
+				if(lengthMode){ lengthMode.addEventListener('change',()=>{
+					const fixedGroup=document.querySelector('.length-fixed-group');
+					const rangeGroup=document.querySelector('.length-range-group');
+					if(lengthMode.value==='fixed'){ fixedGroup.style.display='flex'; rangeGroup.style.display='none'; }
+					else { fixedGroup.style.display='none'; rangeGroup.style.display='flex'; }
+					validate();
+				}); }
 				if(infoBtn && tip){
 					function show(){ tip.classList.remove('hidden'); infoBtn.setAttribute('aria-expanded','true'); }
 					function hide(){ tip.classList.add('hidden'); infoBtn.setAttribute('aria-expanded','false'); }
@@ -249,14 +289,14 @@
 					let pool=buildPool();
 					if(!pool){ symbolsError.textContent='No character classes selected.'; return; }
 					pool=withoutSimilar(pool);
-					const n=parseInt(lengthInput.value,10);
+					function pickLength(){ if(lengthMode.value==='fixed') return parseInt(lengthInput.value,10); const amin=parseInt(lengthMin.value,10); const bmax=parseInt(lengthMax.value,10); return amin + Math.floor(Math.random()*(bmax-amin+1)); }
 					const c=countInput? parseInt(countInput.value,10):1;
-					if(optNoDuplicates?.checked && pool.length < n){ symbolsError.textContent='Pool too small for no duplicates with this length.'; return; }
-					const list=[]; for(let i=0;i<c;i++) list.push(generatePassword(n));
+					const list=[]; for(let i=0;i<c;i++){ const n=pickLength(); if(optNoDuplicates?.checked && pool.length < n){ symbolsError.textContent='Pool too small for no duplicates with length '+n+'.'; return; } list.push(generatePassword(n)); }
 					if(list.some(v=>v===null)){ symbolsError.textContent='Unable to satisfy constraints.'; return; }
 					if(pwOutput){
 						pwOutput.innerHTML='';
-						list.forEach(pw=>{ const li=document.createElement('li'); const copy=document.createElement('button'); copy.type='button'; copy.className='copy-icon'; copy.textContent='⧉'; const span=document.createElement('span'); span.textContent=pw; copy.addEventListener('click',()=>{ navigator.clipboard.writeText(pw).then(()=>{ copy.textContent='✔'; setTimeout(()=>copy.textContent='⧉',900); }); }); li.append(span, copy); pwOutput.appendChild(li); });
+						list.forEach(pw=>{ const li=document.createElement('li'); const copy=document.createElement('button'); copy.type='button'; copy.className='copy-icon'; copy.textContent='⧉'; const span=document.createElement('span'); span.textContent=pw; const cb=document.createElement('input'); cb.type='checkbox'; cb.className='pw-select'; cb.setAttribute('aria-label','Select password'); copy.addEventListener('click',()=>{ navigator.clipboard.writeText(pw).then(()=>{ copy.textContent='✔'; setTimeout(()=>copy.textContent='⧉',900); }); }); li.append(cb, span, copy); pwOutput.appendChild(li); });
+						updateSelectAllButton();
 					}
 					if(genStatus) genStatus.textContent=`Generated ${list.length} password${list.length!==1?'s':''} (len ${n})`;
 				}
@@ -327,6 +367,15 @@
 					countInfo.addEventListener('mouseleave',hideC);
 					window.addEventListener('click',hideC);
 				}
+				const copyAllBtn=document.getElementById('copyAllBtn');
+				const selectAllBtn=document.getElementById('selectAllBtn');
+				const downloadBtn=document.getElementById('downloadBtn');
+				function getAllCheckboxes(){ return [...document.querySelectorAll('.pw-select')]; }
+				function updateSelectAllButton(){ const boxes=getAllCheckboxes(); if(!boxes.length) { selectAllBtn && (selectAllBtn.textContent='Select All'); return; } const allChecked=boxes.every(b=>b.checked); if(selectAllBtn) selectAllBtn.textContent= allChecked? 'Select None':'Select All'; }
+				if(selectAllBtn){ selectAllBtn.addEventListener('click',()=>{ const boxes=getAllCheckboxes(); const all=boxes.every(b=>b.checked); boxes.forEach(b=> b.checked=!all); updateSelectAllButton(); }); }
+				if(copyAllBtn){ copyAllBtn.addEventListener('click',()=>{ const boxes=getAllCheckboxes().filter(b=>b.checked); const pwds = (boxes.length? boxes: getAllCheckboxes()).map(b=> b.parentElement.querySelector('span').textContent); if(!pwds.length) return; navigator.clipboard.writeText(pwds.join('\n')); copyAllBtn.textContent='Copied'; setTimeout(()=>copyAllBtn.textContent='Copy All',1000); }); }
+				if(downloadBtn){ downloadBtn.addEventListener('click',()=>{ const boxes=getAllCheckboxes().filter(b=>b.checked); const pwds=(boxes.length? boxes: getAllCheckboxes()).map(b=> b.parentElement.querySelector('span').textContent); if(!pwds.length) return; const blob=new Blob([pwds.join('\n')+'\n'],{type:'text/plain;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='passwords.txt'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },0); }); }
+				document.addEventListener('change',e=>{ if(e.target && e.target.classList.contains('pw-select')) updateSelectAllButton(); });
 				validate();
 			})();
 		</script>

@@ -1,3 +1,8 @@
+## v0.0.4 - Length range & selection actions
+Added Length Mode (fixed or range with random length per password).
+Added per-password selection checkboxes.
+Added Copy All, Select All/None toggle, and Download selected passwords.
+
 ## v0.0.3 - Advanced constraints & prefs
 Added options: Begin with a letter, No similar, No duplicates, No sequential, Save preferences (cookie).
 Strict symbol field: no letters/digits/whitespace; auto de-dup.
