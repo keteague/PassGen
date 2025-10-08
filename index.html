@@ -424,6 +424,8 @@
 					}
 					if(!raw) return;
 					try{ const d=JSON.parse(raw);
+						// If cookie/localStorage only stores the disabled save flag, do not overwrite defaults
+						if(Object.keys(d).length===1 && d.save===false){ optSavePrefs.checked=false; return; }
 						optUpper.checked=!!d.upper; 
 						optLower.checked=!!d.lower; 
 						optNums.checked=!!d.nums; 
