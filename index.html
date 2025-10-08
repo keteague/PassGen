@@ -13,7 +13,7 @@
 </head>
 <body>
 	<div class="container">
-		<h1>Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.0.2</small></h1>
+		<h1>Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.0.3</small></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
@@ -53,6 +53,11 @@
 						<label class="chk"><input type="checkbox" id="optLower" checked /> <span>Lowercase letters</span></label>
 						<label class="chk"><input type="checkbox" id="optNums" checked /> <span>Numbers</span></label>
 						<label class="chk"><input type="checkbox" id="optSpace" /> <span>Whitespace</span></label>
+						<label class="chk"><input type="checkbox" id="optBeginLetter" /> <span>Begin with a letter</span></label>
+						<label class="chk info-parent"><input type="checkbox" id="optNoSimilar" /> <span>No similar characters</span> <button type="button" class="info-btn tiny" data-tip="tipNoSimilar" aria-label="Similar characters info" aria-expanded="false">i</button><span id="tipNoSimilar" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use characters that can be confused with another, such as i, l, 1, L, o, 0, O, etc.</span></label>
+						<label class="chk info-parent"><input type="checkbox" id="optNoDuplicates" /> <span>No duplicates</span> <button type="button" class="info-btn tiny" data-tip="tipNoDup" aria-label="No duplicates info" aria-expanded="false">i</button><span id="tipNoDup" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use the same character more than once.</span></label>
+						<label class="chk info-parent"><input type="checkbox" id="optNoSequential" /> <span>No sequential characters</span> <button type="button" class="info-btn tiny" data-tip="tipNoSeq" aria-label="No sequential info" aria-expanded="false">i</button><span id="tipNoSeq" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use sequential characters like abc, CBA, 123, etc.</span></label>
+						<label class="chk"><input type="checkbox" id="optSavePrefs" /> <span>Save preferences</span></label>
 						<label class="chk sym" style="align-items:flex-start;gap:10px;flex-wrap:wrap;">
 							<span style="display:inline-flex;align-items:center;gap:8px;">
 								<input type="checkbox" id="optSymbols" checked /> <span>Symbols</span>
@@ -91,6 +96,7 @@
 			.req{color:#f87171;margin-left:4px;}
 			.label-row{display:inline-flex;align-items:center;gap:6px;}
 			.info-btn{background:#1e2e40;border:1px solid #2b4258;color:#a5b4c6;font:600 .6rem/1 system-ui;padding:4px 6px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+			.info-btn.tiny{font-size:.55rem;padding:3px 5px;margin-left:6px;}
 			.info-btn:hover{background:#25405c;color:#fff;}
 			.info-wrap{position:relative;display:inline-flex;}
 			.tooltip{position:absolute;top:100%;left:0;z-index:10;margin-top:6px;background:#0b1624;border:1px solid #2c4256;padding:8px 10px;font-size:.62rem;line-height:1.2;border-radius:8px;max-width:240px;color:#cbd5e1;box-shadow:0 6px 18px -6px rgba(0,0,0,.6);width:max-content;}
@@ -141,6 +147,11 @@
 				const optSymbols=document.getElementById('optSymbols');
 				const optNums=document.getElementById('optNums');
 				const optSpace=document.getElementById('optSpace');
+				const optBeginLetter=document.getElementById('optBeginLetter');
+				const optNoSimilar=document.getElementById('optNoSimilar');
+				const optNoDuplicates=document.getElementById('optNoDuplicates');
+				const optNoSequential=document.getElementById('optNoSequential');
+				const optSavePrefs=document.getElementById('optSavePrefs');
 				const symbolsText=document.getElementById('symbolsText');
 				const symbolsReset=document.getElementById('symbolsReset');
 				const symbolsError=document.getElementById('symbolsError');
@@ -171,11 +182,12 @@
 				function sanitizeSymbols(){
 					if(!symbolsText) return '';
 					let raw=[...symbolsText.value];
-					// Remove spaces and duplicates while preserving first occurrence
 					const seen=new Set();
 					const filtered=[];
 					for(const ch of raw){
-						if(ch===' '|| ch==='\t' || ch==='\n') continue;
+						// reject whitespace, digits, letters
+						if(/\s/.test(ch)) continue;
+						if(/[A-Za-z0-9]/.test(ch)) continue;
 						if(!seen.has(ch)) { seen.add(ch); filtered.push(ch); }
 					}
 					symbolsText.value=filtered.join('');
@@ -190,7 +202,33 @@
 					if(optSymbols?.checked){ pool+= sanitizeSymbols(); }
 					return pool;
 				}
-				function generatePassword(len){ const pool=buildPool(); let out=''; for(let i=0;i<len;i++) out+=randChar(pool); return out; }
+				const SIMILAR_SET=new Set(['i','I','l','L','1','o','O','0']);
+				function withoutSimilar(pool){ if(!optNoSimilar?.checked) return pool; return [...new Set([...pool].filter(ch=>!SIMILAR_SET.has(ch)))].join(''); }
+				function hasSequential(str){ if(!optNoSequential?.checked) return false; const seqLen=3; const lowers='abcdefghijklmnopqrstuvwxyz'; const uppers=lowers.toUpperCase(); const digits='0123456789'; function checkSet(set){ for(let i=0;i<=set.length-seqLen;i++){ const f=set.slice(i,i+seqLen); if(str.includes(f)) return true; const rev=[...f].reverse().join(''); if(str.includes(rev)) return true; } return false; } return checkSet(lowers)||checkSet(uppers)||checkSet(digits); }
+				function generatePassword(len){
+					let pool=buildPool();
+					pool=withoutSimilar(pool);
+					if(optNoDuplicates?.checked && pool.length < len){ return null; }
+					const isLetter=(ch)=> /[A-Za-z]/.test(ch);
+					for(let attempt=0; attempt<5000; attempt++){
+						let pwd='';
+						let localPool=pool;
+						if(optNoDuplicates?.checked){ localPool=[...pool]; }
+						for(let i=0;i<len;i++){
+							if(optNoDuplicates?.checked){
+								const idx=Math.floor(Math.random()*localPool.length);
+								pwd+=localPool[idx];
+								localPool.splice(idx,1);
+							}else{
+								pwd+=randChar(pool);
+							}
+						}
+						if(optBeginLetter?.checked && !isLetter(pwd[0])) continue;
+						if(hasSequential(pwd)) continue;
+						return pwd;
+					}
+					return null; // give up
+				}
 				function validateCount(){
 					if(!countInput) return true;
 					let v=countInput.value.trim();
@@ -208,9 +246,12 @@
 					if(optSymbols?.checked && !symbolSet){ symbolsError.textContent='Symbols list empty.'; return; } else { symbolsError.textContent=''; }
 					let pool=buildPool();
 					if(!pool){ symbolsError.textContent='No character classes selected.'; return; }
+					pool=withoutSimilar(pool);
 					const n=parseInt(lengthInput.value,10);
 					const c=countInput? parseInt(countInput.value,10):1;
+					if(optNoDuplicates?.checked && pool.length < n){ symbolsError.textContent='Pool too small for no duplicates with this length.'; return; }
 					const list=[]; for(let i=0;i<c;i++) list.push(generatePassword(n));
+					if(list.some(v=>v===null)){ symbolsError.textContent='Unable to satisfy constraints.'; return; }
 					if(pwOutput){
 						pwOutput.innerHTML='';
 						list.forEach(pw=>{ const li=document.createElement('li'); const copy=document.createElement('button'); copy.type='button'; copy.className='copy-icon'; copy.textContent='⧉'; const span=document.createElement('span'); span.textContent=pw; copy.addEventListener('click',()=>{ navigator.clipboard.writeText(pw).then(()=>{ copy.textContent='✔'; setTimeout(()=>copy.textContent='⧉',900); }); }); li.append(span, copy); pwOutput.appendChild(li); });
@@ -219,11 +260,52 @@
 				}
 				if(genBtn) genBtn.addEventListener('click',doGenerate);
 				if(symbolsText && !symbolsText.value){ symbolsText.value=DEFAULT_SYMBOLS; }
+				if(symbolsText){ symbolsText.addEventListener('input', ()=>{ sanitizeSymbols(); }); }
 				if(symbolsReset && symbolsText){ symbolsReset.addEventListener('click',()=>{ symbolsText.value=DEFAULT_SYMBOLS; sanitizeSymbols(); }); }
 				if(optSymbols && symbolsText){
 					function syncSymbols(){ symbolsText.disabled=!optSymbols.checked; symbolsText.classList.toggle('disabled',!optSymbols.checked); if(!optSymbols.checked) symbolsError.textContent=''; }
 					optSymbols.addEventListener('change',syncSymbols); syncSymbols();
 				}
+				// Generic tooltip handling for dynamically added info buttons
+				function wireInfoButtons(){
+					[...document.querySelectorAll('.info-btn.tiny')].forEach(btn=>{
+						const tipId=btn.getAttribute('data-tip');
+						const tipEl= document.getElementById(tipId);
+						if(!tipEl) return;
+						function show(){ tipEl.classList.remove('hidden'); btn.setAttribute('aria-expanded','true'); }
+						function hide(){ tipEl.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); }
+						btn.addEventListener('click',e=>{ e.stopPropagation(); tipEl.classList.contains('hidden')?show():hide(); });
+						btn.addEventListener('mouseenter',show); btn.addEventListener('mouseleave',hide); window.addEventListener('click',hide);
+					});
+				}
+				wireInfoButtons();
+				// Preferences save/load via simple cookie
+				function setCookie(name,value){ document.cookie= name+'='+ encodeURIComponent(value) + ';path=/;max-age='+(60*60*24*365); }
+				function getCookie(name){ return document.cookie.split(';').map(s=>s.trim()).filter(s=>s.startsWith(name+'=')).map(s=>decodeURIComponent(s.split('=')[1]))[0]; }
+				function savePrefs(){
+					if(!optSavePrefs?.checked) return;
+					const data={
+						upper:!!optUpper.checked,lower:!!optLower.checked,nums:!!optNums.checked,space:!!optSpace.checked,symbols:!!optSymbols.checked,
+						begin:!!optBeginLetter.checked,sim:!!optNoSimilar.checked,nodup:!!optNoDuplicates.checked,noseq:!!optNoSequential.checked,
+						symbolSet:symbolsText.value, length:lengthInput.value, count:countInput.value
+					};
+					setCookie('passgen_prefs', JSON.stringify(data));
+				}
+				function loadPrefs(){
+					const raw=getCookie('passgen_prefs'); if(!raw) return;
+					try{ const d=JSON.parse(raw);
+						optUpper.checked=d.upper; optLower.checked=d.lower; optNums.checked=d.nums; optSpace.checked=d.space; optSymbols.checked=d.symbols;
+						optBeginLetter.checked=d.begin; optNoSimilar.checked=d.sim; optNoDuplicates.checked=d.nodup; optNoSequential.checked=d.noseq;
+						if(typeof d.symbolSet==='string'){ symbolsText.value=d.symbolSet; sanitizeSymbols(); }
+						if(d.length) lengthInput.value=d.length; if(d.count) countInput.value=d.count;
+						syncSymbols();
+					}catch(e){}
+				}
+				if(optSavePrefs){ optSavePrefs.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
+				['change','input'].forEach(ev=> document.addEventListener(ev,(e)=>{
+					if(e.target && (e.target.matches('#options input')|| e.target===symbolsText)) savePrefs();
+				},{capture:true}));
+				loadPrefs();
 				// Collapse controls
 				[...document.querySelectorAll('.collapse-btn')].forEach(btn=>{
 					btn.addEventListener('click',()=>{
