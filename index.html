@@ -279,7 +279,7 @@
 				function generatePassword(len){
 					let pool=buildPool();
 					pool=withoutSimilar(pool);
-					if(optNoDuplicates?.checked && pool.length < len){ return null; }
+					if(optNoDuplicates?.checked && pool.length < len){ return {pwd:null, reason:'pool-too-small'}; }
 					const isLetter=(ch)=> /[A-Za-z]/.test(ch);
 					for(let attempt=0; attempt<5000; attempt++){
 						let pwd='';
@@ -294,11 +294,13 @@
 								pwd+=randChar(pool);
 							}
 						}
-						if(optBeginLetter?.checked && !isLetter(pwd[0])) continue;
-						if(hasSequential(pwd)) continue;
-						return pwd;
+						if(optBeginLetter?.checked && !isLetter(pwd[0])) { continue; }
+						if(hasSequential(pwd)) { continue; }
+						return {pwd, reason:null};
 					}
-					return null; // give up
+					// Determine dominant reason for failure
+					if(optBeginLetter?.checked && !(optUpper?.checked || optLower?.checked)) return {pwd:null, reason:'begin-letter-no-letters'};
+					return {pwd:null, reason:'attempts-exhausted'};
 				}
 				function validateCount(){
 					if(!countInput) return true;
@@ -316,12 +318,31 @@
 					const symbolSet = symbolsText? symbolsText.value: '';
 					if(optSymbols?.checked && !symbolSet){ symbolsError.textContent='Symbols list empty.'; return; } else { symbolsError.textContent=''; }
 					let pool=buildPool();
+					// Validation: "Begin with a letter" requires at least one letter class enabled
+					if(optBeginLetter?.checked && !(optUpper?.checked || optLower?.checked)){
+						symbolsError.textContent='Enable Uppercase or Lowercase letters (or disable "Begin with a letter").';
+						return;
+					}
 					if(!pool){ symbolsError.textContent='No character classes selected.'; return; }
 					pool=withoutSimilar(pool);
 					function pickLength(){ if(lengthMode.value==='fixed') return parseInt(lengthInput.value,10); const amin=parseInt(lengthMin.value,10); const bmax=parseInt(lengthMax.value,10); return amin + Math.floor(Math.random()*(bmax-amin+1)); }
 					const c=countInput? parseInt(countInput.value,10):1;
-					const list=[]; for(let i=0;i<c;i++){ const n=pickLength(); if(optNoDuplicates?.checked && pool.length < n){ symbolsError.textContent='Pool too small for no duplicates with length '+n+'.'; return; } list.push(generatePassword(n)); }
-					if(list.some(v=>v===null)){ symbolsError.textContent='Unable to satisfy constraints.'; return; }
+					const list=[]; const failures=[];
+					for(let i=0;i<c;i++){
+						const n=pickLength();
+						if(optNoDuplicates?.checked && pool.length < n){ symbolsError.textContent='Pool too small for selected length with "No duplicates".'; return; }
+						const res=generatePassword(n);
+						if(!res.pwd){ failures.push(res.reason); }
+						else list.push(res.pwd);
+					}
+					if(failures.length){
+						// Pick most specific failure message
+						let msg='Unable to satisfy constraints.';
+						if(failures.includes('begin-letter-no-letters')) msg='"Begin with a letter" requires at least one letter class (enable Uppercase or Lowercase).';
+						else if(failures.includes('pool-too-small')) msg='Character pool too small for "No duplicates" at requested length.';
+						else if(failures.includes('attempts-exhausted')) msg='Constraints (e.g., no sequential / first must be letter) could not be met after many attempts.';
+						symbolsError.textContent=msg; return;
+					}
 					if(pwOutput){
 						pwOutput.innerHTML='';
 						function colorize(pw){
