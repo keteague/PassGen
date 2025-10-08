@@ -53,11 +53,11 @@
 						<label class="chk"><input type="checkbox" id="optLower" checked /> <span>Lowercase letters</span></label>
 						<label class="chk"><input type="checkbox" id="optNums" checked /> <span>Numbers</span></label>
 						<label class="chk"><input type="checkbox" id="optSpace" /> <span>Whitespace</span></label>
-						<label class="chk"><input type="checkbox" id="optBeginLetter" /> <span>Begin with a letter</span></label>
-						<label class="chk info-parent"><input type="checkbox" id="optNoSimilar" /> <span>No similar characters</span> <button type="button" class="info-btn tiny" data-tip="tipNoSimilar" aria-label="Similar characters info" aria-expanded="false">i</button><span id="tipNoSimilar" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use characters that can be confused with another, such as i, l, 1, L, o, 0, O, etc.</span></label>
-						<label class="chk info-parent"><input type="checkbox" id="optNoDuplicates" /> <span>No duplicates</span> <button type="button" class="info-btn tiny" data-tip="tipNoDup" aria-label="No duplicates info" aria-expanded="false">i</button><span id="tipNoDup" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use the same character more than once.</span></label>
-						<label class="chk info-parent"><input type="checkbox" id="optNoSequential" /> <span>No sequential characters</span> <button type="button" class="info-btn tiny" data-tip="tipNoSeq" aria-label="No sequential info" aria-expanded="false">i</button><span id="tipNoSeq" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use sequential characters like abc, CBA, 123, etc.</span></label>
-						<label class="chk"><input type="checkbox" id="optSavePrefs" /> <span>Save preferences</span></label>
+						<label class="chk"><input type="checkbox" id="optBeginLetter" checked /> <span>Begin with a letter</span></label>
+						<label class="chk info-parent"><input type="checkbox" id="optNoSimilar" checked /> <span>No similar characters</span> <span class="info-wrap"><button type="button" class="info-btn tiny" data-tip="tipNoSimilar" aria-label="Similar characters info" aria-expanded="false">i</button><span id="tipNoSimilar" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use characters that can be confused with another, such as i, l, 1, L, o, 0, O, etc.</span></span></label>
+						<label class="chk info-parent"><input type="checkbox" id="optNoDuplicates" checked /> <span>No duplicates</span> <span class="info-wrap"><button type="button" class="info-btn tiny" data-tip="tipNoDup" aria-label="No duplicates info" aria-expanded="false">i</button><span id="tipNoDup" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use the same character more than once.</span></span></label>
+						<label class="chk info-parent"><input type="checkbox" id="optNoSequential" checked /> <span>No sequential characters</span> <span class="info-wrap"><button type="button" class="info-btn tiny" data-tip="tipNoSeq" aria-label="No sequential info" aria-expanded="false">i</button><span id="tipNoSeq" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use sequential characters like abc, CBA, 123, etc.</span></span></label>
+						<label class="chk"><input type="checkbox" id="optSavePrefs" checked /> <span>Save preferences</span></label>
 						<label class="chk sym" style="align-items:flex-start;gap:10px;flex-wrap:wrap;">
 							<span style="display:inline-flex;align-items:center;gap:8px;">
 								<input type="checkbox" id="optSymbols" checked /> <span>Symbols</span>
@@ -99,7 +99,9 @@
 			.info-btn.tiny{font-size:.55rem;padding:3px 5px;margin-left:6px;}
 			.info-btn:hover{background:#25405c;color:#fff;}
 			.info-wrap{position:relative;display:inline-flex;}
-			.tooltip{position:absolute;top:100%;left:0;z-index:10;margin-top:6px;background:#0b1624;border:1px solid #2c4256;padding:8px 10px;font-size:.62rem;line-height:1.2;border-radius:8px;max-width:240px;color:#cbd5e1;box-shadow:0 6px 18px -6px rgba(0,0,0,.6);width:max-content;}
+			.tooltip{position:absolute;top:100%;left:0;z-index:20;margin-top:6px;background:#0b1624;border:1px solid #2c4256;padding:8px 10px;font-size:.62rem;line-height:1.2;border-radius:8px;max-width:240px;color:#cbd5e1;box-shadow:0 6px 18px -6px rgba(0,0,0,.6);width:max-content;}
+			.chk.info-parent{position:relative;}
+			.chk.info-parent .info-wrap{position:relative;display:inline-flex;}
 			.hidden{display:none!important;}
 			.pw-output{margin-top:16px;font:600 .95rem/1.2 ui-monospace,Consolas,monospace;background:#0b1624;border:1px solid #203042;padding:14px 16px;border-radius:12px;min-height:48px;word-break:break-all;}
 			.pw-list{counter-reset:pw;list-style:none;margin:16px 0 0;padding:0 0 0 54px;display:flex;flex-direction:column;gap:10px;position:relative;}
