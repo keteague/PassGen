@@ -157,6 +157,12 @@
 			.pw-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;}
 			/* Space for copy icons visually */
 			.pw-list .copy-icon:focus{outline:2px solid #2563eb;outline-offset:2px;}
+			/* Alignment overrides for Length / Count head rows */
+			:root{--settings-head-h:30px;}
+			.len-mode-select{height:var(--settings-head-h);line-height:var(--settings-head-h);}
+			.field .label-row{display:inline-flex;align-items:center;gap:6px;min-height:var(--settings-head-h);}
+			.settings-row{align-items:flex-start;}
+			.count-field{align-self:auto !important;}
 		</style>
 		<script>
 			(function(){
