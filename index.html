@@ -411,6 +411,12 @@
 					setCookie('passgen_prefs', serialized);
 					try{ localStorage.setItem('passgen_prefs', serialized); }catch(e){}
 				}
+				function persistSaveFlagOnly(){
+					const data={save:false};
+					const serialized=JSON.stringify(data);
+					setCookie('passgen_prefs', serialized);
+					try{ localStorage.setItem('passgen_prefs', serialized); }catch(e){}
+				}
 				function loadPrefs(){
 					let raw=getCookie('passgen_prefs');
 					if(!raw){
@@ -441,7 +447,12 @@
 						syncSymbols();
 					}catch(e){}
 				}
-				if(optSavePrefs){ optSavePrefs.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
+				if(optSavePrefs){
+					optSavePrefs.addEventListener('change',()=>{
+						if(optSavePrefs.checked){ savePrefs(); }
+						else { persistSaveFlagOnly(); }
+					});
+				}
 				['change','input'].forEach(ev=> document.addEventListener(ev,(e)=>{
 					if(e.target && (e.target.matches('#options input')|| e.target===symbolsText || e.target===lengthInput || e.target===lengthMin || e.target===lengthMax || e.target===lengthMode || e.target===countInput)) savePrefs();
 				},{capture:true}));
