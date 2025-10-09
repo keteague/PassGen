@@ -9,11 +9,65 @@
 		h1{margin:0 0 24px;font-size:2rem;font-weight:600;}
 		.container{max-width:900px;margin:0 auto;}
 		.note{font-size:.85rem;color:#94a3b8;margin-top:12px;}
+		.pw-strength{margin-left:6px;font:600 .55rem/1 system-ui;padding:4px 6px;border-radius:6px;border:1px solid transparent;}
+		.str-very-weak{background:#3b1a1a;border-color:#5a2a2a;color:#fca5a5;}
+		.str-weak{background:#3a291a;border-color:#6a4a2a;color:#fbbf24;}
+		.str-fair{background:#1f2f3a;border-color:#2c4558;color:#93c5fd;}
+		.str-strong{background:#17321f;border-color:#285237;color:#86efac;}
+		.str-very-strong{background:#122a3b;border-color:#1f4a6a;color:#7dd3fc;}
+
+		/* Light theme overrides */
+		body[data-theme='light']{background:#f8fafc;color:#0f172a;}
+		body[data-theme='light'] .note{color:#334155;}
+		body[data-theme='light'] .subsection{background:#ffffff;border-color:#e5e7eb;}
+		body[data-theme='light'] .subheading{background:#f1f5f9;color:#000000;border-color:#e2e8f0;}
+		body[data-theme='light'] .subheading .collapse-btn{color:#000000;}
+		body[data-theme='light'] .field input{background:#ffffff;border-color:#cbd5e1;color:#0f172a;}
+		body[data-theme='light'] .len-mode-select{background:#ffffff;border-color:#cbd5e1;color:#0f172a;}
+		body[data-theme='light'] .tooltip{background:#ffffff;border-color:#cbd5e1;color:#0f172a;box-shadow:0 6px 18px -6px rgba(0,0,0,.15);}
+		body[data-theme='light'] .pw-output{background:#ffffff;border-color:#e5e7eb;color:#0f172a;}
+		body[data-theme='light'] .pw-list li{background:#ffffff;border-color:#e5e7eb;color:#0f172a;}
+		body[data-theme='light'] .pw-list li .pw-len{background:#f1f5f9;border-color:#e2e8f0;color:#334155;}
+		body[data-theme='light'] .copy-icon{background:#f1f5f9;border-color:#e2e8f0;color:#0f172a;}
+		body[data-theme='light'] .copy-icon:hover{background:#e2e8f0;color:#0f172a;}
+		/* Inputs and dropdowns to white backgrounds */
+		body[data-theme='light'] .symbols-text{background:#ffffff !important;border-color:#cbd5e1;color:#0f172a;}
+		body[data-theme='light'] #__prefixCustom{background:#ffffff !important;border:1px solid #cbd5e1;color:#000000;}
+		body[data-theme='light'] #__suffixCustom{background:#ffffff !important;border:1px solid #cbd5e1;color:#000000;}
+		body[data-theme='light'] #prefixLen{background:#ffffff !important;border:1px solid #cbd5e1;color:#000000;}
+		body[data-theme='light'] #suffixLen{background:#ffffff !important;border:1px solid #cbd5e1;color:#000000;}
+		body[data-theme='light'] #prefixType{background:#ffffff !important;border:1px solid #cbd5e1;color:#000000 !important;}
+		body[data-theme='light'] #suffixType{background:#ffffff !important;border:1px solid #cbd5e1;color:#000000 !important;}
+		body[data-theme='light'] #forceSymbolCount{background:#ffffff !important;border:1px solid #cbd5e1 !important;color:#000000 !important;}
+		body[data-theme='light'] .mini-btn{background:#e2e8f0;border-color:#cbd5e1;color:#0f172a;}
+		body[data-theme='light'] .mini-btn:hover{background:#cbd5e1;}
+		body[data-theme='light'] .gen-btn, body[data-theme='light'] .action-btn{background:#2563eb;border-color:#1d4ed8;color:#ffffff;}
+		body[data-theme='light'] .count-row{background:#f8fafc;border-color:#e2e8f0;color:#334155;}
+		body[data-theme='light'] .count-narrow{background:#ffffff;border-color:#cbd5e1;color:#0f172a;}
+		body[data-theme='light'] .ch-space{color:#64748b;}
+		body[data-theme='light'] .ch-letter{color:#0f172a;}
+		body[data-theme='light'] .ch-digit{color:#7c3aed;}
+		body[data-theme='light'] .ch-sym{color:#b91c1c;}
+		/* Info icon lighter background */
+		body[data-theme='light'] .info-btn{background:#eef2f7;border:1px solid #cbd5e1;color:#334155;}
+		body[data-theme='light'] .info-btn:hover{background:#e2e8f0;color:#111827;}
+		/* Strength badge to white */
+		body[data-theme='light'] .pw-strength{background:#ffffff;border-color:#e5e7eb;color:#111827;}
+		/* Examples pre block to white */
+		body[data-theme='light'] #directions pre{background:#ffffff !important;border-color:#e5e7eb;color:#000000 !important;}
+		/* Passphrase controls: delimiter, casing, whitespace restrict mode */
+		body[data-theme='light'] #ppDelimiter{background:#ffffff !important;border:1px solid #cbd5e1 !important;color:#000000 !important;}
+		body[data-theme='light'] #ppCasing{background:#ffffff !important;border:1px solid #cbd5e1 !important;color:#000000 !important;}
+		body[data-theme='light'] #ppWhitespaceRestrictMode{background:#ffffff !important;border:1px solid #cbd5e1 !important;color:#000000 !important;}
+		body[data-theme='light'] #ppWhitespaceRestrictMode:disabled{background:#ffffff !important;color:#000000 !important;opacity:0.6;}
+		/* Hex controls: casing and scope dropdowns */
+		body[data-theme='light'] #hexCasing{background:#ffffff !important;border:1px solid #cbd5e1 !important;color:#000000 !important;}
+		body[data-theme='light'] #hexCasingScope{background:#ffffff !important;border:1px solid #cbd5e1 !important;color:#000000 !important;}
 	</style>
 </head>
 <body>
 	<div class="container">
-		<h1>Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.0.4</small></h1>
+		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.33</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
@@ -69,9 +123,68 @@
 				</section>
 
 				<section id="options" class="subsection">
-					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">OPTIONS</button></h2>
+					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">OPTIONS</button>
+						<button type="button" id="resetDefaultsBtn" class="mini-btn" style="margin-left:auto;">Reset Defaults</button>
+					</h2>
 					<div class="section-body">
 					<div class="options-stack">
+						<div id="hexControls" style="display:none;flex-direction:column;gap:12px;">
+							<label class="chk" style="display:flex;align-items:center;gap:8px;">
+								<span>Hex letters</span>
+								<select id="hexCasing" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;min-width:140px;">
+									<option value="lower">Lowercase</option>
+									<option value="upper">Uppercase</option>
+									<option value="random">Random</option>
+								</select>
+								<span id="hexCasingOptions" style="display:none;align-items:center;gap:6px;">
+									<select id="hexCasingScope" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;min-width:120px;">
+										<option value="all" selected>All</option>
+										<option value="first-x">First X</option>
+										<option value="last-x">Last X</option>
+									</select>
+									<input type="number" id="hexX" min="1" max="9" value="1" style="display:none;width:50px;background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;" aria-label="X count" />
+								</span>
+							</label>
+							<label class="chk"><input type="checkbox" id="hexBeginLetter" /> <span>Begin with a letter</span></label>
+							<label class="chk info-parent"><input type="checkbox" id="hexNoSequential" checked /> <span>No sequential characters</span> <span class="info-wrap"><button type="button" class="info-btn tiny" data-tip="tipHexSeq" aria-label="No sequential info" aria-expanded="false">i</button><span id="tipHexSeq" role="tooltip" class="tooltip hidden" style="max-width:260px;">Do not use sequential characters like 012, ABC, cde.</span></span></label>
+						</div>
+						<div id="passphraseControls" style="display:none;flex-direction:column;gap:12px;">
+							<label class="chk" style="flex-direction:column;align-items:flex-start;gap:4px;">
+								<span style="font-size:.65rem;font-weight:600;display:flex;align-items:center;gap:8px;">Words: <span id="wordsValue" style="color:#94a3b8;">3</span></span>
+								<input type="range" id="ppWords" min="3" max="10" value="3" style="width:260px;" />
+							</label>
+							<label class="chk" style="flex-direction:column;align-items:flex-start;gap:6px;">
+								<span style="display:flex;align-items:center;gap:6px;">Delimiter <span class="info-wrap"><button type="button" class="info-btn tiny" id="delimInfo" data-tip="delimTip" aria-label="Delimiter info" aria-expanded="false">i</button><span id="delimTip" role="tooltip" class="tooltip hidden" style="max-width:260px;">1-3 symbol characters placed only between words (not at start/end, nor adjacent to prefix/suffix).</span></span></span>
+								<input type="text" id="ppDelimiter" value="." maxlength="3" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .65rem/1 system-ui;border-radius:8px;width:120px;" />
+								<div class="error" id="delimError" style="margin-top:2px;min-height:12px;"></div>
+							</label>
+							<label class="chk" style="flex-direction:column;align-items:flex-start;gap:6px;">
+								<span>Casing</span>
+								<select id="ppCasing" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;">
+									<option value="lower">Lowercase</option>
+									<option value="upper">Uppercase</option>
+									<option value="first">First letter</option>
+									<option value="last">Last letter</option>
+									<option value="random">Random</option>
+									<option value="every-other-letter">Every other letter</option>
+									<option value="every-other-word">Every other word</option>
+								</select>
+							</label>
+							<label class="chk"><input type="checkbox" id="ppIncludeNumber" checked /> <span>Include a number</span></label>
+							<div style="display:flex;flex-direction:column;gap:6px;">
+								<label class="chk"><input type="checkbox" id="ppWhitespace" /> <span>Allow whitespace</span></label>
+								<div style="display:flex;align-items:center;gap:6px;margin-left:18px;font-size:.6rem;">
+									<label style="display:inline-flex;align-items:center;gap:6px;">
+										<input type="checkbox" id="ppWhitespaceRestrict" disabled /> <span>Do not <select id="ppWhitespaceRestrictMode" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:4px 6px;font:600 .55rem/1 system-ui;border-radius:6px;">
+											<option value="start">start</option>
+											<option value="end">end</option>
+											<option value="both">start or end</option>
+										</select> with a whitespace</span>
+									</label>
+								</div>
+							</div>
+							<label class="chk"><input type="checkbox" id="ppReplacements" /> <span>Replacements</span></label>
+						</div>
 						<label class="chk"><input type="checkbox" id="optUpper" checked /> <span>Uppercase letters</span></label>
 						<label class="chk"><input type="checkbox" id="optLower" checked /> <span>Lowercase letters</span></label>
 						<label class="chk"><input type="checkbox" id="optNums" checked /> <span>Numbers</span></label>
@@ -89,6 +202,12 @@
 								<input type="text" id="symbolsText" class="symbols-text" maxlength="64" />
 								<button type="button" id="symbolsReset" class="mini-btn" aria-label="Reset symbols">Reset</button>
 							</div>
+							<div id="forceSymbolsWrap" style="display:flex;flex-direction:row;align-items:center;gap:6px;margin:4px 0 0 24px;font-size:.6rem;">
+								<label style="display:inline-flex;align-items:center;gap:6px;">
+									<input type="checkbox" id="optForceSymbols" checked /> <span>Minimum amount of symbols:</span>
+								</label>
+								<input type="number" id="forceSymbolCount" min="1" max="9" value="1" style="width:44px;background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:4px 6px;font:600 .55rem/1 system-ui;border-radius:6px;" aria-label="Minimum number of symbols" />
+							</div>
 						</label>
 					</div>
 					<div class="error" id="symbolsError" role="alert" aria-live="polite" style="margin-top:6px;"></div>
@@ -102,9 +221,72 @@
 						<button type="button" id="copyAllBtn" class="action-btn">Copy All</button>
 						<button type="button" id="selectAllBtn" class="action-btn">Select All</button>
 						<button type="button" id="downloadBtn" class="action-btn">Download</button>
+						<button type="button" id="copyUrlBtn" class="action-btn">Copy URL</button>
 						<span id="genStatus" class="gen-status" aria-live="polite"></span>
 					</div>
 					<ol id="pwOutput" class="pw-list" aria-live="polite"></ol>
+					</div>
+				</section>
+				<section id="directions" class="subsection">
+					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">DIRECTIONS</button></h2>
+					<div class="section-body">
+						<div class="note">
+							<h3 style="margin:12px 0 6px;font-size:.9rem;">API and URL parameters</h3>
+							<p>Use query parameters to generate passwords via a crafted URL. Append parameters to this page’s URL. If <code>format=text</code> is provided, the page renders plaintext suitable for curl.</p>
+							<p>Common parameters:</p>
+							<ul>
+								<li><code>mode</code>: password | passphrase | hex</li>
+								<li><code>length</code> (with <code>lengthMode=fixed</code>) or <code>min</code>/<code>max</code> (implies range)</li>
+								<li><code>count</code>: number of passwords</li>
+								<li><code>format</code>: text (outputs plaintext)</li>
+							</ul>
+							<p>Password options:</p>
+							<ul>
+								<li><code>optUpper</code>, <code>optLower</code>, <code>optNums</code>, <code>optSpace</code>, <code>optBeginLetter</code>, <code>optNoSimilar</code>, <code>optNoDuplicates</code>, <code>optNoSequential</code> = 1|0</li>
+								<li><code>symbols</code>: custom symbols string</li>
+								<li><code>forceSymbols</code>=1|0, <code>forceCount</code>=1..9</li>
+							</ul>
+							<p>Affix options:</p>
+							<ul>
+								<li><code>optPrefix</code>=1 to enable; <code>prefixType</code>=uppercase|lowercase|numbers|symbols|custom; if not custom use <code>prefixLen</code>=1..32, else <code>prefixCustom</code>=string</li>
+								<li><code>optSuffix</code>=1 to enable; <code>suffixType</code>=uppercase|lowercase|numbers|symbols|custom|mirror; if not custom or mirror use <code>suffixLen</code>=1..32, else <code>suffixCustom</code>=string</li>
+							</ul>
+							<p>Passphrase options:</p>
+							<ul>
+								<li><code>ppWords</code>=3..10, <code>ppDelimiter</code>, <code>ppCasing</code>, <code>ppIncludeNumber</code>=1|0, <code>ppWhitespace</code>=1|0, <code>ppWhitespaceRestrict</code>=1|0, <code>ppWhitespaceRestrictMode</code>, <code>ppReplacements</code>=1|0</li>
+							</ul>
+							<p>Hex options:</p>
+							<ul>
+								<li><code>hexCasing</code>=upper|lower, <code>hexBeginLetter</code>=1|0, <code>hexNoSequential</code>=1|0</li>
+							</ul>
+							<p>Examples:</p>
+							<pre style="white-space:pre-wrap;background:#0b1624;border:1px solid #2c4256;color:#cbd5e1;padding:8px;border-radius:8px;">
+	# Password, 16 chars, require symbol quota, plaintext
+	?mode=password&length=16&forceSymbols=1&forceCount=2&format=text
+
+	# Password, range 12-18, 50 results
+	?mode=password&min=12&max=18&count=50
+
+	# Passphrase: 4 words, dash delimiter, upper casing
+	?mode=passphrase&ppWords=4&ppDelimiter=-&ppCasing=upper
+
+	# Passphrase, range 20-30 exact length fitting
+	?mode=passphrase&min=20&max=30&ppWords=3
+
+	# Hex: uppercase, begin with letter, 32 length
+	?mode=hex&length=32&hexCasing=upper&hexBeginLetter=1
+
+	# Hex: range 24-48, lowercase, no sequential, plaintext
+	?mode=hex&min=24&max=48&hexCasing=lower&hexNoSequential=1&format=text
+
+	# Prefix/Suffix: 2-letter uppercase prefix, mirrored suffix
+	?mode=password&length=20&optPrefix=1&prefixType=uppercase&prefixLen=2&optSuffix=1&suffixType=mirror
+
+	# curl usage (plaintext)
+	curl -s "https://example.com/index.html?mode=password&length=20&format=text"
+							</pre>
+							<p>Tip: Use the “Copy URL” button in the PASSWORDS section to copy a crafted URL matching your current settings. Append <code>&format=text</code> for plaintext output suitable for curl.</p>
+						</div>
 					</div>
 				</section>
 			</main>
@@ -179,6 +361,19 @@
 			.length-fixed-group{position:relative;top:0;}
 			.length-range-group{position:relative;top:0;}
 		</style>
+		<style>
+			/* Modal styles */
+			#resetModalOverlay{position:fixed;inset:0;background:#0f172acc;display:flex;align-items:center;justify-content:center;z-index:9999;}
+			#resetModalOverlay.hidden{display:none!important;}
+			#resetModal{background:#132236;border:1px solid #27435a;padding:28px 30px 24px;border-radius:14px;max-width:420px;width:100%;box-shadow:0 18px 40px -12px rgba(0,0,0,.7);font-size:.75rem;color:#e2e8f0;display:flex;flex-direction:column;gap:18px;}
+			#resetModal h3{margin:0;font:600 .85rem/1.2 system-ui;color:#f1f5f9;}
+			#resetModal p{margin:0;font-size:.7rem;line-height:1.4;color:#cbd5e1;}
+			.reset-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:4px;}
+			.reset-btn-danger{background:#dc2626;border:1px solid #b91c1c;color:#fff;padding:7px 14px;font:600 .6rem/1 system-ui;border-radius:8px;cursor:pointer;}
+			.reset-btn-danger:hover{filter:brightness(1.1);}
+			.reset-btn-secondary{background:#243447;border:1px solid #355168;color:#cbd5e1;padding:7px 14px;font:600 .6rem/1 system-ui;border-radius:8px;cursor:pointer;}
+			.reset-btn-secondary:hover{background:#2e4258;}
+		</style>
 		<script>
 			(function(){
 				const lengthInput=document.getElementById('lengthInput');
@@ -198,6 +393,8 @@
 				const optUpper=document.getElementById('optUpper');
 				const optLower=document.getElementById('optLower');
 				const optSymbols=document.getElementById('optSymbols');
+				const optForceSymbols=document.getElementById('optForceSymbols');
+				const forceSymbolCount=document.getElementById('forceSymbolCount');
 				const optNums=document.getElementById('optNums');
 				const optSpace=document.getElementById('optSpace');
 				const optBeginLetter=document.getElementById('optBeginLetter');
@@ -206,11 +403,151 @@
 				const optNoSequential=document.getElementById('optNoSequential');
 				const optSavePrefs=document.getElementById('optSavePrefs');
 				const modeSelect=document.getElementById('modeSelect');
+				// Passphrase elements
+				const passphraseControls=document.getElementById('passphraseControls');
+				const ppWords=document.getElementById('ppWords');
+				const wordsValue=document.getElementById('wordsValue');
+				const ppDelimiter=document.getElementById('ppDelimiter');
+				const delimError=document.getElementById('delimError');
+				const ppCasing=document.getElementById('ppCasing');
+				const ppIncludeNumber=document.getElementById('ppIncludeNumber');
+				const ppWhitespace=document.getElementById('ppWhitespace');
+				const ppWhitespaceRestrict=document.getElementById('ppWhitespaceRestrict');
+				const ppWhitespaceRestrictMode=document.getElementById('ppWhitespaceRestrictMode');
+				const ppReplacements=document.getElementById('ppReplacements');
+				const resetBtn=document.getElementById('resetDefaultsBtn');
 				// Prefix option elements (added dynamically below)
 				const symbolsText=document.getElementById('symbolsText');
 				const symbolsReset=document.getElementById('symbolsReset');
 				const symbolsError=document.getElementById('symbolsError');
 				if(!lengthInput) return;
+				const themeToggle=document.getElementById('themeToggle');
+				function applyTheme(theme){ document.body.setAttribute('data-theme', theme); if(themeToggle){ themeToggle.textContent = theme==='light'? 'Dark mode':'Light mode'; } }
+				// default theme from prefs later; fall back to dark if not set
+				if(!document.body.hasAttribute('data-theme')){ applyTheme('dark'); }
+				function applyModeOptionVisibility(){
+					const mode = modeSelect.value;
+					const isPass = mode==='passphrase';
+					const isHex = mode==='hex';
+					if(passphraseControls){ passphraseControls.style.display= isPass? 'flex':'none'; }
+					const hexControls=document.getElementById('hexControls');
+					if(hexControls){ hexControls.style.display= isHex? 'flex':'none'; }
+					// Base groups to hide for non-password modes
+					const baseHide=['optUpper','optLower','optNums','optSpace','optSymbols','optForceSymbols','forceSymbolCount','symbolsText','symbolsReset','optNoSimilar','optNoDuplicates'];
+					// Additional hides only for passphrase
+					const passphraseOnlyHide=['optBeginLetter','optNoSequential'];
+					const toHide = isPass? baseHide.concat(passphraseOnlyHide) : (isHex? baseHide : []);
+					// Show/hide per current mode
+					[...new Set(baseHide.concat(passphraseOnlyHide))].forEach(id=>{
+						const el=document.getElementById(id); if(!el) return; const wrapper= el.closest('label') || el; wrapper.style.display = toHide.includes(id)? 'none' : '';
+					});
+					// Hex specific toggles: bind hex checkboxes to global flags for reuse
+					const hexBegin=document.getElementById('hexBeginLetter');
+					const hexSeq=document.getElementById('hexNoSequential');
+					const gb=document.getElementById('optBeginLetter');
+					const gs=document.getElementById('optNoSequential');
+					const hexCasing=document.getElementById('hexCasing');
+					const hexOpts=document.getElementById('hexCasingOptions');
+					const hexScope=document.getElementById('hexCasingScope');
+					const hexX=document.getElementById('hexX');
+					if(isHex){
+						if(hexBegin && gb){ hexBegin.checked = gb.checked; gb.closest('label').style.display='none'; hexBegin.addEventListener('change',()=>{ gb.checked = hexBegin.checked; if(optSavePrefs.checked) savePrefs(); }); }
+						if(hexSeq && gs){ hexSeq.checked = gs.checked; gs.closest('label').style.display='none'; hexSeq.addEventListener('change',()=>{ gs.checked = hexSeq.checked; if(optSavePrefs.checked) savePrefs(); }); }
+						// Show casing options for upper/lower only
+						if(hexCasing && hexOpts){
+							hexOpts.style.display = (hexCasing.value==='upper' || hexCasing.value==='lower')? 'inline-flex':'none';
+							hexX.style.display = (hexScope.value==='first-x' || hexScope.value==='last-x')? 'inline-block':'none';
+							hexCasing.addEventListener('change',()=>{
+								hexOpts.style.display = (hexCasing.value==='upper' || hexCasing.value==='lower')? 'inline-flex':'none';
+								if(optSavePrefs.checked) savePrefs();
+							});
+							hexScope.addEventListener('change',()=>{ hexX.style.display = (hexScope.value==='first-x' || hexScope.value==='last-x')? 'inline-block':'none'; if(optSavePrefs.checked) savePrefs(); });
+							hexX.addEventListener('input',()=>{ let v=parseInt(hexX.value,10); if(isNaN(v)||v<1)v=1; if(v>9)v=9; hexX.value=String(v); if(optSavePrefs.checked) savePrefs(); });
+						}
+					}else{
+						// ensure hex mirrors reflect globals when leaving mode
+						if(hexBegin && gb){ hexBegin.checked = gb.checked; }
+						if(hexSeq && gs){ hexSeq.checked = gs.checked; }
+					}
+				}
+				modeSelect.addEventListener('change',()=>{ applyModeOptionVisibility(); if(optSavePrefs.checked) savePrefs(); });
+				applyModeOptionVisibility();
+				if(ppWords){ ppWords.addEventListener('input',()=>{ wordsValue.textContent=ppWords.value; if(optSavePrefs.checked) savePrefs(); }); }
+				function validateDelimiter(){
+					if(!ppDelimiter) return true;
+					let v=ppDelimiter.value;
+					// allow only non-space symbol characters (no letters/digits/whitespace)
+					v=[...v].filter(ch=>!/[A-Za-z0-9\s]/.test(ch)).slice(0,3).join('');
+					ppDelimiter.value=v || '.';
+					if(!v){ delimError.textContent='Delimiter required.'; return false; }
+					delimError.textContent=''; return true;
+				}
+				if(ppDelimiter){ ['input','blur'].forEach(evt=> ppDelimiter.addEventListener(evt,()=>{ validateDelimiter(); if(optSavePrefs.checked) savePrefs(); })); }
+				if(ppWhitespace){ ppWhitespace.addEventListener('change',()=>{ ppWhitespaceRestrict.disabled=!ppWhitespace.checked; if(!ppWhitespace.checked){ ppWhitespaceRestrict.checked=false; } if(optSavePrefs.checked) savePrefs(); }); }
+				if(ppWhitespaceRestrict){ ppWhitespaceRestrict.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
+				if(ppWhitespaceRestrictMode){ ppWhitespaceRestrictMode.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
+				if(ppCasing){ ppCasing.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
+				if(ppIncludeNumber){ ppIncludeNumber.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
+				if(ppReplacements){ ppReplacements.addEventListener('change',()=>{ if(optSavePrefs.checked) savePrefs(); }); }
+				// Modal creation (lazy)
+				function ensureResetModal(){
+					if(document.getElementById('resetModalOverlay')) return;
+					const wrap=document.createElement('div');
+					wrap.id='resetModalOverlay';
+					wrap.className='hidden';
+					wrap.innerHTML=`<div id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetModalTitle">
+						<h3 id="resetModalTitle">Reset to Defaults</h3>
+						<p>This will set all options back to the default settings, regardless of your saved preferences.<br/><br/>Do you wish to continue?</p>
+						<div class="reset-actions">
+							<button type="button" id="resetCancel" class="reset-btn-secondary">Cancel</button>
+							<button type="button" id="resetConfirm" class="reset-btn-danger">Yes, Reset</button>
+						</div>
+					</div>`;
+					document.body.appendChild(wrap);
+					const cancel=wrap.querySelector('#resetCancel');
+					const confirm=wrap.querySelector('#resetConfirm');
+					cancel.addEventListener('click',()=>{ hideModal(); });
+					wrap.addEventListener('click',e=>{ if(e.target===wrap) hideModal(); });
+					confirm.addEventListener('click',()=>{ performResetDefaults(); hideModal(); });
+				}
+				function showModal(){ ensureResetModal(); const ov=document.getElementById('resetModalOverlay'); ov.classList.remove('hidden'); setTimeout(()=>{ const dlg=document.getElementById('resetModal'); dlg?.focus(); },30); }
+				function hideModal(){ const ov=document.getElementById('resetModalOverlay'); if(ov) ov.classList.add('hidden'); }
+				function performResetDefaults(){
+					// Length defaults
+					lengthMode.value='fixed'; lengthMode.dispatchEvent(new Event('change'));
+					lengthInput.value='16';
+					lengthMin.value='12';
+					lengthMax.value='16';
+					countInput.value='1';
+					modeSelect.value='password';
+					// Core toggles
+					optUpper.checked=true; optLower.checked=true; optNums.checked=true; optSpace.checked=false; optSymbols.checked=true;
+					optBeginLetter.checked=true; optNoSimilar.checked=true; optNoDuplicates.checked=true; optNoSequential.checked=true;
+					optSavePrefs.checked=true;
+					// Symbols
+					symbolsText.value=DEFAULT_SYMBOLS; sanitizeSymbols();
+					// Force symbols quota
+					if(typeof optForceSymbols!=='undefined' && optForceSymbols){ optForceSymbols.checked=true; }
+					if(typeof forceSymbolCount!=='undefined' && forceSymbolCount){ forceSymbolCount.value='1'; }
+					// Prefix / Suffix (if mounted)
+					const optPrefix=document.getElementById('optPrefix');
+					const prefixLen=document.getElementById('prefixLen');
+					const prefixType=document.getElementById('prefixType');
+					const prefixCustom=document.getElementById('__prefixCustom');
+					if(optPrefix){ optPrefix.checked=false; if(prefixLen) prefixLen.value=''; if(prefixType) prefixType.value='uppercase'; if(prefixCustom) prefixCustom.value=''; window.__prefixConfig={enabled:false,length:0,type:'uppercase'}; window.__prefixEnabled=false; }
+					const optSuffix=document.getElementById('optSuffix');
+					const suffixLen=document.getElementById('suffixLen');
+					const suffixType=document.getElementById('suffixType');
+					const suffixCustom=document.getElementById('__suffixCustom');
+					if(optSuffix){ optSuffix.checked=false; if(suffixLen) suffixLen.value=''; if(suffixType) suffixType.value='uppercase'; if(suffixCustom) suffixCustom.value=''; window.__suffixConfig={enabled:false,length:0,type:'uppercase'}; window.__suffixEnabled=false; }
+					// Sync dependent UI
+					if(typeof syncSymbols==='function') syncSymbols();
+					// Trigger prefix/suffix sync handlers if they exist
+					['optPrefix','prefixLen','prefixType','__prefixCustom','optSuffix','suffixLen','suffixType','__suffixCustom','optForceSymbols','forceSymbolCount'].forEach(id=>{ const el=document.getElementById(id); if(el) el.dispatchEvent(new Event('change')); });
+					validate(); validateCount();
+					if(optSavePrefs.checked) savePrefs(); else persistSaveFlagOnly();
+				}
+				if(resetBtn){ resetBtn.addEventListener('click',()=>{ showModal(); }); }
 				function validate(){
 					if(lengthMode.value==='fixed'){
 						let v=lengthInput.value.trim();
@@ -273,6 +610,16 @@
 				}
 				function buildPool(){
 					let pool='';
+					const mode = modeSelect?.value;
+					if(mode==='hex'){
+						const hexCasing=document.getElementById('hexCasing');
+						const choice=(hexCasing?.value||'lower');
+						let letters='abcdef';
+						if(choice==='upper') letters='ABCDEF';
+						if(choice==='random') letters='abcdefABCDEF';
+						pool = letters + BASE_DIGITS;
+						return pool;
+					}
 					if(optLower?.checked) pool+= 'abcdefghijklmnopqrstuvwxyz';
 					if(optUpper?.checked) pool+= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 					if(optNums?.checked) pool+= BASE_DIGITS;
@@ -287,7 +634,6 @@
 					else if(type==='lowercase') source='abcdefghijklmnopqrstuvwxyz';
 					else if(type==='numbers') source=BASE_DIGITS;
 					else if(type==='symbols') source=sanitizeSymbols();
-					else if(type==='random') source=buildPool();
 					else if(type==='custom'){
 						const ci=document.getElementById('__prefixCustom');
 						if(ci) source=ci.value.slice(0,10);
@@ -310,9 +656,32 @@
 				const SIMILAR_SET=new Set(['i','I','l','L','1','o','O','0']);
 				function withoutSimilar(pool){ if(!optNoSimilar?.checked) return pool; return [...new Set([...pool].filter(ch=>!SIMILAR_SET.has(ch)))].join(''); }
 				function hasSequential(str){ if(!optNoSequential?.checked) return false; const seqLen=3; const lowers='abcdefghijklmnopqrstuvwxyz'; const uppers=lowers.toUpperCase(); const digits='0123456789'; function checkSet(set){ for(let i=0;i<=set.length-seqLen;i++){ const f=set.slice(i,i+seqLen); if(str.includes(f)) return true; const rev=[...f].reverse().join(''); if(str.includes(rev)) return true; } return false; } return checkSet(lowers)||checkSet(uppers)||checkSet(digits); }
+				// --- Dynamic passphrase dictionary (loaded from words.txt) ---
+				let PASSPHRASE_WORDS=null; // array once loaded
+				let WORDS_BY_LENGTH={};
+				let MIN_WORD_LEN=1; let MAX_WORD_LEN=1;
+				async function loadWordList(){
+					try{
+						const resp= await fetch('words.txt');
+						if(!resp.ok) throw new Error('fetch-failed');
+						const text= await resp.text();
+						const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && /^[a-zA-Z]+$/.test(l));
+						PASSPHRASE_WORDS=lines;
+						WORDS_BY_LENGTH = lines.reduce((m,w)=>{ (m[w.length]||(m[w.length]=[])).push(w.toLowerCase()); return m; },{});
+						const lens=Object.keys(WORDS_BY_LENGTH).map(n=>parseInt(n,10));
+						MIN_WORD_LEN=Math.min(...lens);
+						MAX_WORD_LEN=Math.max(...lens);
+					}catch(e){ PASSPHRASE_WORDS=[]; }
+				}
+				loadWordList();
 				function generatePassword(len){
 					let pool=buildPool();
 					pool=withoutSimilar(pool);
+					const forceSym = optSymbols?.checked && optForceSymbols?.checked;
+					let quota = 0;
+					if(forceSym){
+						quota = Math.min(9, Math.max(1, parseInt(forceSymbolCount.value,10)||0));
+					}
 					if(optNoDuplicates?.checked && pool.length < len){ return {pwd:null, reason:'pool-too-small'}; }
 					const isLetter=(ch)=> /[A-Za-z]/.test(ch);
 					// Prefix handling (password mode only)
@@ -346,6 +715,26 @@
 					}
 					const coreLen = len - prefixStr.length - suffixStr.length - leadingLetter.length;
 					if(coreLen < 0) return {pwd:null, reason:'prefix-too-long'};
+					// Symbol quota feasibility (length & duplicates) before we modify pool further
+					if(forceSym){
+						const symbolSetPre = optSymbols?.checked ? sanitizeSymbols():'';
+						if(symbolSetPre.length===0) return {pwd:null, reason:'force-symbols-impossible-length'}; // no symbols at all
+						const existingAffixSymbols = [leadingLetter, ...prefixStr, ...suffixStr].filter(c=>symbolSetPre.includes(c)).length;
+						const needed = Math.max(0, quota - existingAffixSymbols);
+						if(needed > coreLen) return {pwd:null, reason:'force-symbols-impossible-length'}; // not enough room
+						if(optNoDuplicates?.checked){
+							// available unique symbols after removing affix symbols if duplicates prohibited
+							let uniqueAvail = [...new Set(symbolSetPre)];
+							if(optNoDuplicates.checked){
+								// remove any already used affix symbols (each counts once)
+								for(const ch of new Set(prefixStr+suffixStr+leadingLetter)){
+									const idx=uniqueAvail.indexOf(ch);
+									if(idx!==-1) uniqueAvail.splice(idx,1);
+								}
+							}
+							if(needed > uniqueAvail.length) return {pwd:null, reason:'force-symbols-impossible-duplicates'};
+						}
+					}
 					if(optNoDuplicates?.checked && prefixStr){
 						// ensure prefix characters removed from pool if duplicates disallowed
 						const poolArr=[...pool];
@@ -365,27 +754,140 @@
 							if(pool.length < coreLen) return {pwd:null, reason:'pool-too-small'};
 						}
 					}
+					// Pre-capture symbol set for quota
+					const symbolSet = optSymbols?.checked ? sanitizeSymbols() : '';
 					for(let attempt=0; attempt<5000; attempt++){
 						let core='';
 						let localPool=pool;
 						if(optNoDuplicates?.checked){ localPool=[...pool]; }
+						let neededSymbols = 0;
+						if(forceSym){
+							// Count symbols already in affixes / leadingLetter
+							const existingSym = [leadingLetter, ...prefixStr, ...suffixStr].filter(ch=> symbolSet.includes(ch)).length;
+							neededSymbols = Math.max(0, quota - existingSym);
+						}
+						// Decide random slots for required symbols (without duplication) if needed
+						let symbolSlots=null;
+						if(forceSym && neededSymbols>0){
+							const indices=[...Array(coreLen).keys()];
+							// Fisher-Yates shuffle
+							for(let s=indices.length-1;s>0;s--){ const j=Math.floor(Math.random()*(s+1)); [indices[s],indices[j]]=[indices[j],indices[s]]; }
+							symbolSlots=new Set(indices.slice(0,neededSymbols));
+						}
 						for(let i=0;i<coreLen;i++){
-							if(optNoDuplicates?.checked){
-								const idx=Math.floor(Math.random()*localPool.length);
-								core+=localPool[idx];
-								localPool.splice(idx,1);
+							let ch='';
+							const mustSymbol = symbolSlots && symbolSlots.has(i);
+							if(mustSymbol){
+								if(!symbolSet.length) return {pwd:null, reason:'force-symbols-impossible-length'};
+								if(optNoDuplicates?.checked){
+									const symPool = localPool.filter(c=>symbolSet.includes(c));
+									if(!symPool.length) return {pwd:null, reason:'force-symbols-impossible-duplicates'};
+									const pick = symPool[Math.floor(Math.random()*symPool.length)];
+									ch=pick; localPool.splice(localPool.indexOf(pick),1);
+								}else{
+									ch = symbolSet[Math.floor(Math.random()*symbolSet.length)];
+								}
 							}else{
-								core+=randChar(pool);
+								if(optNoDuplicates?.checked){
+									const idx=Math.floor(Math.random()*localPool.length);
+									ch=localPool[idx];
+									localPool.splice(idx,1);
+								}else{
+									ch=randChar(pool);
+								}
 							}
+							core+=ch;
 						}
 						let pwd=leadingLetter + prefixStr + core + suffixStr;
 						if(optBeginLetter?.checked && !isLetter(pwd[0])) { continue; }
+						if(forceSym){
+							const symCount = [...pwd].filter(c=>symbolSet.includes(c)).length;
+							if(symCount < quota) continue;
+						}
 						if(hasSequential(pwd)) { continue; }
 						return {pwd, reason:null};
 					}
 					// Determine dominant reason for failure
 					if(optBeginLetter?.checked && !(optUpper?.checked || optLower?.checked)) return {pwd:null, reason:'begin-letter-no-letters'};
 					return {pwd:null, reason:'attempts-exhausted'};
+				}
+				// --- Passphrase generation ---
+				function applyCasing(word,index,total){
+					if(!ppCasing) return word;
+					switch(ppCasing.value){
+						case 'upper': return word.toUpperCase();
+						case 'lower': return word.toLowerCase();
+						case 'first': return word.charAt(0).toUpperCase()+word.slice(1).toLowerCase();
+						case 'last': return word.slice(0,-1).toLowerCase()+word.slice(-1).toUpperCase();
+						case 'random': {
+							const pos=Math.floor(Math.random()*word.length);
+							return word.split('').map((c,i)=> i===pos? c.toUpperCase():c.toLowerCase()).join('');
+						}
+						case 'every-other-letter': {
+							return word.split('').map((c,i)=> i%2===0? c.toUpperCase():c.toLowerCase()).join('');
+						}
+						case 'every-other-word': {
+							return (index%2===0)? word.toUpperCase():word.toLowerCase();
+						}
+						default: return word;
+					}
+				}
+				function applyReplacements(str){
+					if(!ppReplacements?.checked) return str;
+					const map={a:['@','4'],e:['3'],i:['1','!'],o:['0'],s:['$','5'],t:['7']};
+					return str.split('').map(ch=>{
+						const low=ch.toLowerCase();
+						if(map[low]){ const repl= map[low][Math.floor(Math.random()*map[low].length)]; return /[A-Z]/.test(ch)? repl.toUpperCase():repl; }
+						return ch;
+					}).join('');
+				}
+				function generatePassphrase(targetLen){
+					if(PASSPHRASE_WORDS===null) return {pwd:null, reason:'wordlist-not-loaded'};
+					if(PASSPHRASE_WORDS.length===0) return {pwd:null, reason:'wordlist-empty'};
+					const W= parseInt(ppWords?.value,10)||3;
+					const delimiterRaw=(ppDelimiter?.value)||'.';
+					const delimiter=[...delimiterRaw].filter(ch=>!/[A-Za-z0-9\s]/.test(ch)).slice(0,3).join('')||'.';
+					const includeNumber = !!ppIncludeNumber?.checked;
+					const allowWS= !!ppWhitespace?.checked;
+					const restrictWS= !!ppWhitespaceRestrict?.checked ? (ppWhitespaceRestrictMode?.value||'both') : null; // start end both
+					// Build prefix/suffix similar to password mode
+					let prefixStr=''; let suffixStr='';
+					if(window.__prefixEnabled && window.__prefixConfig?.enabled){ prefixStr=buildPrefixSegment(window.__prefixConfig.length, window.__prefixConfig.type); }
+					if(window.__suffixEnabled && window.__suffixConfig?.enabled){ const sCfg=window.__suffixConfig; const effLen = sCfg.type==='mirror'? prefixStr.length: sCfg.length; suffixStr=buildSuffixSegment(effLen, sCfg.type, prefixStr); }
+					const leadingWS = allowWS && (!restrictWS || (restrictWS!=='start' && restrictWS!=='both'))? ' ' : '';
+					const trailingWS = allowWS && (!restrictWS || (restrictWS!=='end' && restrictWS!=='both'))? ' ' : '';
+					const numberLen = includeNumber? 1:0;
+					const overhead = prefixStr.length + suffixStr.length + leadingWS.length + trailingWS.length + numberLen + delimiter.length*(W-1);
+					const neededCore = targetLen - overhead;
+					if(neededCore < W*MIN_WORD_LEN || neededCore > W*MAX_WORD_LEN) return {pwd:null, reason:'passphrase-length-unmet'};
+					// Attempt allocate words by picking first W-1 then solving last exactly
+					for(let attempt=0; attempt<3000; attempt++){
+						let words=[]; let usedLen=0;
+						for(let i=0;i<W-1;i++){
+							const remainingSlots = W-1 - i; // excluding current pick
+							const maxForThis = neededCore - usedLen - MIN_WORD_LEN*remainingSlots;
+							const minForThis = Math.max(MIN_WORD_LEN, neededCore - usedLen - MAX_WORD_LEN*remainingSlots);
+							const viableLens = Object.keys(WORDS_BY_LENGTH).map(n=>parseInt(n,10)).filter(L=> L>=minForThis && L<=maxForThis);
+							if(!viableLens.length) { words=[]; break; }
+							const pickLen = viableLens[Math.floor(Math.random()*viableLens.length)];
+							const bucket=WORDS_BY_LENGTH[pickLen];
+							const pickedWord = bucket[Math.floor(Math.random()*bucket.length)];
+							words.push(pickedWord); usedLen+=pickLen;
+						}
+						if(words.length!==W-1) continue; // failed early
+						const remaining = neededCore - usedLen;
+						const finalBucket = WORDS_BY_LENGTH[remaining];
+						if(!finalBucket || !finalBucket.length) continue;
+						words.push(finalBucket[Math.floor(Math.random()*finalBucket.length)]);
+						// Apply casing & replacements
+						const transformed = words.map((w,i)=> applyReplacements(applyCasing(w,i,words.length)));
+						let core = transformed.join(delimiter);
+						if(includeNumber){ core+= Math.floor(Math.random()*10); }
+						let assembled = leadingWS + prefixStr + core + suffixStr + trailingWS;
+						if(assembled.length!==targetLen) continue; // ensure exact match
+						return {pwd:assembled, reason:null};
+					}
+					return {pwd:null, reason:'passphrase-attempts-exhausted'};
 				}
 				function validateCount(){
 					if(!countInput) return true;
@@ -402,9 +904,16 @@
 					if(optSymbols && optSymbols.checked) sanitizeSymbols();
 					const symbolSet = symbolsText? symbolsText.value: '';
 					if(optSymbols?.checked && !symbolSet){ symbolsError.textContent='Symbols list empty.'; return; } else { symbolsError.textContent=''; }
+					const mode = modeSelect.value;
+					const isPassphraseMode = mode==='passphrase';
+					// Pre-check forced symbol quota feasibility
+					if(optSymbols?.checked && optForceSymbols?.checked){
+						const quota = Math.min(9, Math.max(1, parseInt(forceSymbolCount.value,10)||0));
+						if(!symbolSet.length){ symbolsError.textContent='Symbols list empty for required symbol count.'; return; }
+					}
 					let pool=buildPool();
 					// Validation: "Begin with a letter" requires at least one letter class enabled
-					if(optBeginLetter?.checked && !(optUpper?.checked || optLower?.checked)){
+					if(mode!=='hex' && optBeginLetter?.checked && !(optUpper?.checked || optLower?.checked)){
 						symbolsError.textContent='Enable Uppercase or Lowercase letters (or disable "Begin with a letter").';
 						return;
 					}
@@ -415,10 +924,88 @@
 					const list=[]; const failures=[];
 					for(let i=0;i<c;i++){
 						const n=pickLength();
-						if(optNoDuplicates?.checked && pool.length < n){ symbolsError.textContent='Pool too small for selected length with "No duplicates".'; return; }
-						const res=generatePassword(n);
-						if(!res.pwd){ failures.push(res.reason); }
-						else list.push(res.pwd);
+						if(isPassphraseMode){
+							const res=generatePassphrase(n);
+							if(!res.pwd) failures.push(res.reason); else list.push(res.pwd);
+						}else if(mode==='hex'){
+							// Generate hex with optional begin-letter and no-sequential
+							const hexCasing=document.getElementById('hexCasing');
+							const casing=(hexCasing?.value||'lower');
+							// For upper/lower, include both cases in the pool and adjust after generation via scope rules
+							let letters='abcdefABCDEF';
+							const useRandom = (casing==='random');
+							const digits=BASE_DIGITS;
+							const beginLetterEl=document.getElementById('hexBeginLetter');
+							const noSeqEl=document.getElementById('hexNoSequential');
+							const beginLetter = !!beginLetterEl?.checked;
+							const noSeq = !!noSeqEl?.checked;
+							const isLetter=(ch)=> /[A-Fa-f]/.test(ch);
+							let prefixStr=''; let suffixStr='';
+							if(window.__prefixEnabled && window.__prefixConfig?.enabled){ prefixStr=buildPrefixSegment(window.__prefixConfig.length, window.__prefixConfig.type); }
+							if(window.__suffixEnabled && window.__suffixConfig?.enabled){ const sCfg=window.__suffixConfig; const effLen = sCfg.type==='mirror'? prefixStr.length: sCfg.length; suffixStr=buildSuffixSegment(effLen, sCfg.type, prefixStr); }
+							let leading='';
+							if(beginLetter){
+								const firstAffixChar=(prefixStr && prefixStr[0])||'';
+								if(!isLetter(firstAffixChar)) leading= letters[Math.floor(Math.random()*letters.length)];
+							}
+							const coreLen = n - prefixStr.length - suffixStr.length - leading.length;
+							if(coreLen<0){ failures.push('prefix-too-long'); continue; }
+							const hexPool = letters + digits;
+							let core='';
+							let attempts=0;
+							while(core.length<coreLen && attempts<1000){
+								let ch = hexPool[Math.floor(Math.random()*hexPool.length)];
+								if(useRandom && /[A-Fa-f]/.test(ch)){
+									// flip case with 50% chance for letters when using random casing
+									ch = Math.random()<0.5 ? ch.toLowerCase() : ch.toUpperCase();
+								}
+								// sequential check on the fly
+								if(noSeq && core.length>=2){
+									const a=core.charCodeAt(core.length-2);
+									const b=core.charCodeAt(core.length-1);
+									const cch=ch.charCodeAt(0);
+									const asc=(cch===b+1 && b===a+1);
+									const desc=(cch===b-1 && b===a-1);
+									if(asc||desc){ attempts++; continue; }
+								}
+								core+=ch;
+							}
+							if(core.length!==coreLen){ failures.push('attempts-exhausted'); continue; }
+							let finalPw = leading + prefixStr + core + suffixStr;
+							// Apply casing scope for upper/lower selections
+							if(!useRandom && (casing==='upper' || casing==='lower')){
+								const scopeEl=document.getElementById('hexCasingScope');
+								const xEl=document.getElementById('hexX');
+								const modeScope=scopeEl?.value || 'all';
+								const x = Math.min(9, Math.max(1, parseInt(xEl?.value||'1',10)));
+								const chars=[...finalPw];
+								const letterIdx = [];
+								for(let i=0;i<chars.length;i++){ if(/[A-Fa-f]/.test(chars[i])) letterIdx.push(i); }
+								if(modeScope==='all'){
+									for(const i of letterIdx){ chars[i] = (casing==='upper')? chars[i].toUpperCase(): chars[i].toLowerCase(); }
+								}else if(modeScope==='first-x'){
+									const targets = letterIdx.slice(0,x);
+									// Set all letters to the opposite case first
+									for(const i of letterIdx){ chars[i] = (casing==='upper')? chars[i].toLowerCase(): chars[i].toUpperCase(); }
+									// Then set the first X to the chosen case
+									for(const i of targets){ chars[i] = (casing==='upper')? chars[i].toUpperCase(): chars[i].toLowerCase(); }
+								}else if(modeScope==='last-x'){
+									const start = Math.max(0, letterIdx.length - x);
+									const targets = letterIdx.slice(start);
+									// Set all letters to the opposite case first
+									for(const i of letterIdx){ chars[i] = (casing==='upper')? chars[i].toLowerCase(): chars[i].toUpperCase(); }
+									// Then set the last X to the chosen case
+									for(const i of targets){ chars[i] = (casing==='upper')? chars[i].toUpperCase(): chars[i].toLowerCase(); }
+								}
+								finalPw = chars.join('');
+							}
+							list.push(finalPw);
+						}else{
+							if(optNoDuplicates?.checked && pool.length < n){ symbolsError.textContent='Pool too small for selected length with "No duplicates".'; return; }
+							const res=generatePassword(n);
+							if(!res.pwd){ failures.push(res.reason); }
+							else list.push(res.pwd);
+						}
 					}
 					if(failures.length){
 						// Pick most specific failure message
@@ -426,6 +1013,12 @@
 						if(failures.includes('begin-letter-no-letters')) msg='"Begin with a letter" requires at least one letter class (enable Uppercase or Lowercase).';
 						else if(failures.includes('pool-too-small')) msg='Character pool too small for constraints at requested length.';
 						else if(failures.includes('prefix-too-long')) msg='Affix (prefix/suffix) length exceeds total requested length.';
+						else if(failures.includes('force-symbols-impossible-length')) msg='Not enough length to fit the required number of symbols (reduce quota or affix sizes).';
+						else if(failures.includes('force-symbols-impossible-duplicates')) msg='Cannot meet required symbol count without duplicates (either add more distinct symbols or allow duplicates).';
+						else if(failures.includes('passphrase-length-unmet')) msg='Unable to fit chosen word count within requested length (adjust length or word count).';
+						else if(failures.includes('passphrase-attempts-exhausted')) msg='Could not assemble passphrase meeting exact length after many attempts.';
+						else if(failures.includes('wordlist-not-loaded')) msg='Word list still loading. Please try again in a moment.';
+						else if(failures.includes('wordlist-empty')) msg='Word list is empty or failed to load valid words.';
 						else if(failures.includes('attempts-exhausted')) msg='Constraints (e.g., no sequential / first must be letter) could not be met after many attempts.';
 						symbolsError.textContent=msg; return;
 					}
@@ -443,14 +1036,39 @@
 							}
 							return frag;
 						}
+						function estimateStrength(pw){
+							// Rough entropy estimate by character class coverage
+							let alphabet=0;
+							if(/[a-z]/.test(pw)) alphabet+=26;
+							if(/[A-Z]/.test(pw)) alphabet+=26;
+							if(/[0-9]/.test(pw)) alphabet+=10;
+							// Approx symbols set size from configured symbols; fallback 32
+							const symSet = symbolsText? sanitizeSymbols():'';
+							if(/[^A-Za-z0-9\s]/.test(pw)) alphabet+= (symSet? new Set(symSet).size:32);
+							if(/[\s]/.test(pw)) alphabet+=1;
+							// Fallback for hex mode limited alphabet
+							if(modeSelect.value==='hex'){
+								const hexCasing=document.getElementById('hexCasing');
+								alphabet = (hexCasing?.value||'lower')==='upper' ? 16 : 16;
+							}
+							alphabet = Math.max(alphabet, 1);
+							const bits = Math.log2(alphabet) * pw.length;
+							if(bits < 28) return {label:'very weak', cls:'str-very-weak'};
+							if(bits < 36) return {label:'weak', cls:'str-weak'};
+							if(bits < 60) return {label:'fair', cls:'str-fair'};
+							if(bits < 128) return {label:'strong', cls:'str-strong'};
+							return {label:'very strong', cls:'str-very-strong'};
+						}
 						list.forEach(pw=>{ 
 							const li=document.createElement('li'); 
 							const copy=document.createElement('button'); copy.type='button'; copy.className='copy-icon'; copy.textContent='⧉'; 
 							const cb=document.createElement('input'); cb.type='checkbox'; cb.className='pw-select'; cb.setAttribute('aria-label','Select password'); 
 							const span=document.createElement('span'); span.setAttribute('aria-label','Password'); span.appendChild(colorize(pw)); 
 							const len=document.createElement('span'); len.className='pw-len'; len.textContent=pw.length; len.setAttribute('aria-label','Password length');
+							const str=estimateStrength(pw);
+							const sBadge=document.createElement('span'); sBadge.className='pw-strength '+str.cls; sBadge.textContent=str.label;
 							copy.addEventListener('click',()=>{ navigator.clipboard.writeText(pw).then(()=>{ copy.textContent='✔'; setTimeout(()=>copy.textContent='⧉',900); }); }); 
-							li.append(copy, cb, span, len); pwOutput.appendChild(li); 
+							li.append(copy, cb, span, len, sBadge); pwOutput.appendChild(li); 
 						});
 						updateSelectAllButton();
 					}
@@ -461,8 +1079,24 @@
 				if(symbolsText){ symbolsText.addEventListener('input', ()=>{ sanitizeSymbols(); }); }
 				if(symbolsReset && symbolsText){ symbolsReset.addEventListener('click',()=>{ symbolsText.value=DEFAULT_SYMBOLS; sanitizeSymbols(); }); }
 				if(optSymbols && symbolsText){
-					function syncSymbols(){ symbolsText.disabled=!optSymbols.checked; symbolsText.classList.toggle('disabled',!optSymbols.checked); if(!optSymbols.checked) symbolsError.textContent=''; }
+					function syncSymbols(){
+						symbolsText.disabled=!optSymbols.checked; symbolsText.classList.toggle('disabled',!optSymbols.checked);
+						if(!optSymbols.checked){ symbolsError.textContent=''; }
+						if(optForceSymbols){ optForceSymbols.disabled=!optSymbols.checked; }
+						if(forceSymbolCount){ forceSymbolCount.disabled= !optSymbols.checked || !optForceSymbols.checked; }
+					}
 					optSymbols.addEventListener('change',syncSymbols); syncSymbols();
+				}
+				if(optForceSymbols && forceSymbolCount){
+					function clampForce(){
+						let v=parseInt(forceSymbolCount.value,10);
+						if(isNaN(v)||v<1) v=1; if(v>9) v=9; forceSymbolCount.value=v;
+						if(optSavePrefs.checked) savePrefs();
+					}
+					optForceSymbols.addEventListener('change',()=>{ forceSymbolCount.disabled=!optForceSymbols.checked || !optSymbols.checked; if(optSavePrefs.checked) savePrefs(); });
+					forceSymbolCount.addEventListener('input',clampForce);
+					forceSymbolCount.addEventListener('blur',clampForce);
+					clampForce();
 				}
 				// Generic tooltip handling for dynamically added info buttons
 				function wireInfoButtons(){
@@ -489,6 +1123,8 @@
 						nums:!!optNums.checked,
 						space:!!optSpace.checked,
 						symbols:!!optSymbols.checked,
+						forceSymbols:!!optForceSymbols?.checked,
+						forceSymbolCount: forceSymbolCount? (parseInt(forceSymbolCount.value,10)||0):0,
 						begin:!!optBeginLetter.checked,
 						sim:!!optNoSimilar.checked,
 						nodup:!!optNoDuplicates.checked,
@@ -500,9 +1136,23 @@
 						lengthMax:lengthMax.value,
 						count:countInput.value,
 						mode:modeSelect.value,
+						ppWords: ppWords? ppWords.value:null,
+						ppDelimiter: ppDelimiter? ppDelimiter.value:null,
+						ppCasing: ppCasing? ppCasing.value:null,
+						ppIncludeNumber: ppIncludeNumber? ppIncludeNumber.checked:null,
+						ppWhitespace: ppWhitespace? ppWhitespace.checked:null,
+						ppWhitespaceRestrict: ppWhitespaceRestrict? ppWhitespaceRestrict.checked:null,
+						ppWhitespaceRestrictMode: ppWhitespaceRestrictMode? ppWhitespaceRestrictMode.value:null,
+						ppReplacements: ppReplacements? ppReplacements.checked:null,
+						hexCasing: (document.getElementById('hexCasing')||{}).value || null,
+						hexCasingScope: (document.getElementById('hexCasingScope')||{}).value || null,
+						hexX: (document.getElementById('hexX')||{}).value || null,
+						hexBeginLetter: (document.getElementById('hexBeginLetter')||{}).checked || false,
+						hexNoSequential: (document.getElementById('hexNoSequential')||{}).checked || false,
 						prefix:(window.__prefixConfig||null),
 						suffix:(window.__suffixConfig||null),
-						save:!!optSavePrefs.checked
+						save:!!optSavePrefs.checked,
+						theme: document.body.getAttribute('data-theme')||'dark'
 					};
 					const serialized=JSON.stringify(data);
 					setCookie('passgen_prefs', serialized);
@@ -516,6 +1166,8 @@
 						nums:!!optNums.checked,
 						space:!!optSpace.checked,
 						symbols:!!optSymbols.checked,
+						forceSymbols:!!optForceSymbols?.checked,
+						forceSymbolCount: forceSymbolCount? (parseInt(forceSymbolCount.value,10)||0):0,
 						begin:!!optBeginLetter.checked,
 						sim:!!optNoSimilar.checked,
 						nodup:!!optNoDuplicates.checked,
@@ -527,6 +1179,19 @@
 						lengthMax:lengthMax.value,
 						count:countInput.value,
 						mode:modeSelect.value,
+						ppWords: ppWords? ppWords.value:null,
+						ppDelimiter: ppDelimiter? ppDelimiter.value:null,
+						ppCasing: ppCasing? ppCasing.value:null,
+						ppIncludeNumber: ppIncludeNumber? ppIncludeNumber.checked:null,
+						ppWhitespace: ppWhitespace? ppWhitespace.checked:null,
+						ppWhitespaceRestrict: ppWhitespaceRestrict? ppWhitespaceRestrict.checked:null,
+						ppWhitespaceRestrictMode: ppWhitespaceRestrictMode? ppWhitespaceRestrictMode.value:null,
+						ppReplacements: ppReplacements? ppReplacements.checked:null,
+						hexCasing: (document.getElementById('hexCasing')||{}).value || null,
+						hexCasingScope: (document.getElementById('hexCasingScope')||{}).value || null,
+						hexX: (document.getElementById('hexX')||{}).value || null,
+						hexBeginLetter: (document.getElementById('hexBeginLetter')||{}).checked || false,
+						hexNoSequential: (document.getElementById('hexNoSequential')||{}).checked || false,
 						prefix:(window.__prefixConfig||null),
 						suffix:(window.__suffixConfig||null),
 						save:false
@@ -542,6 +1207,9 @@
 					}
 					if(!raw) return;
 					try{ const d=JSON.parse(raw);
+						// Legacy: Remap deprecated 'random' affix type to 'uppercase'
+						if(d.prefix && d.prefix.type==='random') d.prefix.type='uppercase';
+						if(d.suffix && d.suffix.type==='random') d.suffix.type='uppercase';
 						if(Object.keys(d).length===1 && d.save===false){ optSavePrefs.checked=false; return; }
 						if('save' in d) optSavePrefs.checked=!!d.save;
 						if('upper' in d) optUpper.checked=!!d.upper; 
@@ -549,6 +1217,8 @@
 						if('nums' in d) optNums.checked=!!d.nums; 
 						if('space' in d) optSpace.checked=!!d.space; 
 						if('symbols' in d) optSymbols.checked=!!d.symbols;
+						if('forceSymbols' in d && optForceSymbols) optForceSymbols.checked=!!d.forceSymbols;
+						if('forceSymbolCount' in d && forceSymbolCount && d.forceSymbolCount) forceSymbolCount.value=d.forceSymbolCount;
 						if('begin' in d) optBeginLetter.checked=!!d.begin; 
 						if('sim' in d) optNoSimilar.checked=!!d.sim; 
 						if('nodup' in d) optNoDuplicates.checked=!!d.nodup; 
@@ -560,8 +1230,29 @@
 						if('lengthMin' in d) lengthMin.value=d.lengthMin;
 						if('lengthMax' in d) lengthMax.value=d.lengthMax;
 						if('mode' in d && modeSelect) modeSelect.value=d.mode;
+						if('ppWords' in d && ppWords && d.ppWords){ ppWords.value=d.ppWords; wordsValue.textContent=d.ppWords; }
+						if('ppDelimiter' in d && ppDelimiter && d.ppDelimiter){ ppDelimiter.value=d.ppDelimiter; }
+						if('ppCasing' in d && ppCasing && d.ppCasing){ ppCasing.value=d.ppCasing; }
+						if('ppIncludeNumber' in d && ppIncludeNumber && typeof d.ppIncludeNumber==='boolean'){ ppIncludeNumber.checked=d.ppIncludeNumber; }
+						if('ppWhitespace' in d && ppWhitespace && typeof d.ppWhitespace==='boolean'){ ppWhitespace.checked=d.ppWhitespace; }
+						if('ppWhitespaceRestrict' in d && ppWhitespaceRestrict && typeof d.ppWhitespaceRestrict==='boolean'){ ppWhitespaceRestrict.checked=d.ppWhitespaceRestrict; }
+						if('ppWhitespaceRestrictMode' in d && ppWhitespaceRestrictMode && d.ppWhitespaceRestrictMode){ ppWhitespaceRestrictMode.value=d.ppWhitespaceRestrictMode; }
+						if('ppReplacements' in d && ppReplacements && typeof d.ppReplacements==='boolean'){ ppReplacements.checked=d.ppReplacements; }
+						// Hex options
+						const hexCasing=document.getElementById('hexCasing');
+						const hexBegin=document.getElementById('hexBeginLetter');
+						const hexSeq=document.getElementById('hexNoSequential');
+						const hexScope=document.getElementById('hexCasingScope');
+						const hexX=document.getElementById('hexX');
+						if('hexCasing' in d && hexCasing && d.hexCasing){ hexCasing.value=d.hexCasing; }
+						if('hexCasingScope' in d && hexScope && d.hexCasingScope){ hexScope.value=d.hexCasingScope; }
+						if('hexX' in d && hexX && d.hexX){ hexX.value=d.hexX; }
+						if('hexBeginLetter' in d && hexBegin && typeof d.hexBeginLetter==='boolean'){ hexBegin.checked=d.hexBeginLetter; }
+						if('hexNoSequential' in d && hexSeq && typeof d.hexNoSequential==='boolean'){ hexSeq.checked=d.hexNoSequential; }
 						if('prefix' in d && d.prefix){ window.__prefixConfig=d.prefix; window.__prefixEnabled=d.prefix.enabled; }
 						if('suffix' in d && d.suffix){ window.__suffixConfig=d.suffix; window.__suffixEnabled=d.suffix.enabled; }
+						// Theme
+						if('theme' in d && typeof d.theme==='string'){ applyTheme(d.theme==='light'?'light':'dark'); }
 						// Recompute mode visibility
 						lengthMode.dispatchEvent(new Event('change'));
 						validate();
@@ -569,7 +1260,7 @@
 						syncSymbols();
 					}catch(e){}
 				}
-				// Inject Prefix UI into options (Password mode only)
+				// Inject Prefix UI into options (now shown in both modes)
 				(function initPrefix(){
 					const stack=document.querySelector('.options-stack');
 					if(!stack) return;
@@ -586,7 +1277,6 @@
 							<option value="lowercase">Lowercase</option>
 							<option value="numbers">Numbers</option>
 							<option value="symbols">Symbols</option>
-							<option value="random" selected>Random</option>
 							<option value="custom">Custom</option>
 						</select>
 						<input type="text" id="__prefixCustom" maxlength="10" style="display:none;width:120px;background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;" placeholder="Custom" />
@@ -629,7 +1319,6 @@
 							<option value="lowercase">Lowercase</option>
 							<option value="numbers">Numbers</option>
 							<option value="symbols">Symbols</option>
-							<option value="random" selected>Random</option>
 							<option value="custom">Custom</option>
 							<option value="mirror">Mirror</option>
 						</select>
@@ -663,7 +1352,10 @@
 						if(window.__suffixConfig.type) suffixType.value=window.__suffixConfig.type;
 					}
 					toggleSuffixCustom(); handleMirrorDisable(); syncSuffix();
-					function applyModeVisibility(){ wrap.style.display= (modeSelect.value==='password')? 'inline-flex':'none'; }
+					function applyModeVisibility(){
+						// Make suffix always visible for both password and passphrase modes
+						wrap.style.display='inline-flex';
+					}
 					modeSelect.addEventListener('change',()=>{ applyModeVisibility(); if(optSavePrefs.checked) savePrefs(); });
 					applyModeVisibility();
 				})();
@@ -675,7 +1367,8 @@
 					}
 					syncPrefix();
 					function applyModeVisibility(){
-						wrap.style.display= (modeSelect.value==='password')? 'inline-flex':'none';
+						// Make prefix always visible for both password and passphrase modes
+						wrap.style.display='inline-flex';
 					}
 					modeSelect.addEventListener('change',()=>{ applyModeVisibility(); if(optSavePrefs.checked) savePrefs(); });
 					applyModeVisibility();
@@ -686,10 +1379,71 @@
 						else { persistSaveFlagOnly(); }
 					});
 				}
+				// Theme toggle handler
+				if(themeToggle){ themeToggle.addEventListener('click',()=>{ const curr=document.body.getAttribute('data-theme')||'dark'; const next= curr==='light'? 'dark':'light'; applyTheme(next); if(optSavePrefs.checked) savePrefs(); }); }
 				['change','input'].forEach(ev=> document.addEventListener(ev,(e)=>{
 					if(e.target && (e.target.matches('#options input')|| e.target===symbolsText || e.target===lengthInput || e.target===lengthMin || e.target===lengthMax || e.target===lengthMode || e.target===countInput)) savePrefs();
 				},{capture:true}));
 				loadPrefs();
+				// --- Simple URL/API support ---
+				(function wireApi(){
+					const params=new URLSearchParams(location.search);
+					if(!params || [...params].length===0) return;
+					function setIf(id, val){ const el=document.getElementById(id); if(!el) return; if(el.tagName==='INPUT' && (el.type==='checkbox')) el.checked = (val==='1'||val==='true'); else if(el.tagName==='INPUT' || el.tagName==='SELECT') el.value=val; }
+					// Common
+					if(params.get('mode')){ setIf('modeSelect', params.get('mode')); }
+					if(params.get('length')){ setIf('lengthInput', params.get('length')); setIf('lengthMode','fixed'); }
+					if(params.get('min')){ setIf('lengthMin', params.get('min')); setIf('lengthMode','range'); }
+					if(params.get('max')){ setIf('lengthMax', params.get('max')); setIf('lengthMode','range'); }
+					if(params.get('count')){ setIf('countInput', params.get('count')); }
+					// Password options
+					['optUpper','optLower','optNums','optSpace','optBeginLetter','optNoSimilar','optNoDuplicates','optNoSequential'].forEach(k=>{ if(params.has(k)) setIf(k, params.get(k)); });
+					if(params.get('symbols')){ const s=document.getElementById('symbolsText'); if(s){ s.value=params.get('symbols'); } }
+					if(params.has('forceSymbols')) setIf('optForceSymbols', params.get('forceSymbols'));
+					if(params.get('forceCount')) setIf('forceSymbolCount', params.get('forceCount'));
+					// Affix options
+					if(params.has('optPrefix')){ setIf('optPrefix','1'); }
+					if(params.get('prefixType')) setIf('prefixType', params.get('prefixType'));
+					if(params.get('prefixType')==='custom' && params.has('prefixCustom')){ setIf('__prefixCustom', params.get('prefixCustom')); }
+					if(params.get('prefixType') && params.get('prefixType')!=='custom' && params.get('prefixLen')){ setIf('prefixLen', params.get('prefixLen')); }
+					if(params.has('optSuffix')){ setIf('optSuffix','1'); }
+					if(params.get('suffixType')) setIf('suffixType', params.get('suffixType'));
+					if(params.get('suffixType')==='custom' && params.has('suffixCustom')){ setIf('__suffixCustom', params.get('suffixCustom')); }
+					if(params.get('suffixType') && params.get('suffixType')!=='mirror' && params.get('suffixLen')){ setIf('suffixLen', params.get('suffixLen')); }
+					// Passphrase options
+					if(params.get('ppWords')) setIf('ppWords', params.get('ppWords'));
+					if(params.get('ppDelimiter')) setIf('ppDelimiter', params.get('ppDelimiter'));
+					if(params.get('ppCasing')) setIf('ppCasing', params.get('ppCasing'));
+					['ppIncludeNumber','ppWhitespace','ppWhitespaceRestrict','ppReplacements'].forEach(k=>{ if(params.has(k)) setIf(k, params.get(k)); });
+					if(params.get('ppWhitespaceRestrictMode')) setIf('ppWhitespaceRestrictMode', params.get('ppWhitespaceRestrictMode'));
+					// Hex options
+					if(params.get('hexCasing')) setIf('hexCasing', params.get('hexCasing'));
+					['hexBeginLetter','hexNoSequential'].forEach(k=>{ if(params.has(k)) setIf(k, params.get(k)); });
+					// Trigger visibility updates and generate
+					applyModeOptionVisibility();
+					// Ensure prefix/suffix dynamic UI syncs configs
+					const optPrefix=document.getElementById('optPrefix'); const prefixLen=document.getElementById('prefixLen'); const prefixType=document.getElementById('prefixType'); const prefixCustom=document.getElementById('__prefixCustom');
+					if(optPrefix && optPrefix.checked){
+						window.__prefixEnabled=true;
+						window.__prefixConfig={enabled:true,length: parseInt(prefixLen?.value||'0',10)||0, type: prefixType?.value||'uppercase'};
+					}
+					const optSuffix=document.getElementById('optSuffix'); const suffixLen=document.getElementById('suffixLen'); const suffixType=document.getElementById('suffixType'); const suffixCustom=document.getElementById('__suffixCustom');
+					if(optSuffix && optSuffix.checked){
+						window.__suffixEnabled=true;
+						window.__suffixConfig={enabled:true,length: parseInt(suffixLen?.value||'0',10)||0, type: suffixType?.value||'uppercase'};
+					}
+					if(params.get('format')==='text'){
+						// Generate and output plaintext response
+						const c = parseInt(params.get('count')||'1',10);
+						doGenerate();
+						const lines=[...document.querySelectorAll('#pwOutput li')].map(li=> li.querySelector('span[aria-label="Password"]').textContent);
+						// replace DOM with pre tag for simple copy via curl
+						document.body.innerHTML = '<pre style="white-space:pre; margin:0; padding:12px; background:#0f172a; color:#f1f5f9;">'+ lines.join('\n') + '\n</pre>';
+						return;
+					}
+					// Otherwise, just generate into UI
+					doGenerate();
+				})();
 				// Collapse controls
 				[...document.querySelectorAll('.collapse-btn')].forEach(btn=>{
 					btn.addEventListener('click',()=>{
@@ -712,11 +1466,66 @@
 				const copyAllBtn=document.getElementById('copyAllBtn');
 				const selectAllBtn=document.getElementById('selectAllBtn');
 				const downloadBtn=document.getElementById('downloadBtn');
+				const copyUrlBtn=document.getElementById('copyUrlBtn');
 				function getAllCheckboxes(){ return [...document.querySelectorAll('.pw-select')]; }
 				function updateSelectAllButton(){ const boxes=getAllCheckboxes(); if(!boxes.length) { selectAllBtn && (selectAllBtn.textContent='Select All'); return; } const allChecked=boxes.every(b=>b.checked); if(selectAllBtn) selectAllBtn.textContent= allChecked? 'Select None':'Select All'; }
 				if(selectAllBtn){ selectAllBtn.addEventListener('click',()=>{ const boxes=getAllCheckboxes(); const all=boxes.every(b=>b.checked); boxes.forEach(b=> b.checked=!all); updateSelectAllButton(); }); }
 				if(copyAllBtn){ copyAllBtn.addEventListener('click',()=>{ const boxes=getAllCheckboxes().filter(b=>b.checked); const pwds = (boxes.length? boxes: getAllCheckboxes()).map(b=> b.parentElement.querySelector('span').textContent); if(!pwds.length) return; navigator.clipboard.writeText(pwds.join('\n')); copyAllBtn.textContent='Copied'; setTimeout(()=>copyAllBtn.textContent='Copy All',1000); }); }
 				if(downloadBtn){ downloadBtn.addEventListener('click',()=>{ const boxes=getAllCheckboxes().filter(b=>b.checked); const pwds=(boxes.length? boxes: getAllCheckboxes()).map(b=> b.parentElement.querySelector('span').textContent); if(!pwds.length) return; const blob=new Blob([pwds.join('\n')+'\n'],{type:'text/plain;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='passwords.txt'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },0); }); }
+				if(copyUrlBtn){
+					function buildUrl(){
+						const base = location.origin + location.pathname;
+						const p=new URLSearchParams();
+						p.set('mode', modeSelect.value);
+						if(lengthMode.value==='fixed'){ p.set('length', String(lengthInput.value||'')); }
+						else{ p.set('min', String(lengthMin.value||'')); p.set('max', String(lengthMax.value||'')); }
+						p.set('count', String(countInput.value||'1'));
+						if(modeSelect.value==='password'){
+							['optUpper','optLower','optNums','optSpace','optBeginLetter','optNoSimilar','optNoDuplicates','optNoSequential'].forEach(id=>{ const el=document.getElementById(id); if(el) p.set(id, el.checked? '1':'0'); });
+							if(optSymbols?.checked){ p.set('symbols', symbolsText.value); if(optForceSymbols?.checked){ p.set('forceSymbols','1'); p.set('forceCount', String(forceSymbolCount.value||'1')); } }
+						}
+						// Affixes (for all modes)
+						const optPrefix=document.getElementById('optPrefix');
+						const prefixLen=document.getElementById('prefixLen');
+						const prefixType=document.getElementById('prefixType');
+						const prefixCustom=document.getElementById('__prefixCustom');
+						if(optPrefix && optPrefix.checked){
+							p.set('optPrefix','1');
+							if(prefixType){ p.set('prefixType', prefixType.value); }
+							if(prefixType && prefixType.value==='custom' && prefixCustom){ p.set('prefixCustom', prefixCustom.value||''); }
+							else if(prefixLen){ p.set('prefixLen', String(prefixLen.value||'')); }
+						}
+						const optSuffix=document.getElementById('optSuffix');
+						const suffixLen=document.getElementById('suffixLen');
+						const suffixType=document.getElementById('suffixType');
+						const suffixCustom=document.getElementById('__suffixCustom');
+						if(optSuffix && optSuffix.checked){
+							p.set('optSuffix','1');
+							if(suffixType){ p.set('suffixType', suffixType.value); }
+							if(suffixType && suffixType.value==='custom' && suffixCustom){ p.set('suffixCustom', suffixCustom.value||''); }
+							else if(suffixType && suffixType.value!=='mirror' && suffixLen){ p.set('suffixLen', String(suffixLen.value||'')); }
+						}
+						if(modeSelect.value==='passphrase'){
+							if(ppWords) p.set('ppWords', String(ppWords.value));
+							if(ppDelimiter) p.set('ppDelimiter', ppDelimiter.value);
+							if(ppCasing) p.set('ppCasing', ppCasing.value);
+							['ppIncludeNumber','ppWhitespace','ppWhitespaceRestrict','ppReplacements'].forEach(id=>{ const el=document.getElementById(id); if(el) p.set(id, el.checked? '1':'0'); });
+							if(ppWhitespaceRestrictMode) p.set('ppWhitespaceRestrictMode', ppWhitespaceRestrictMode.value);
+						}
+						if(modeSelect.value==='hex'){
+							const casing=document.getElementById('hexCasing'); if(casing) p.set('hexCasing', casing.value);
+							const begin=document.getElementById('hexBeginLetter'); if(begin) p.set('hexBeginLetter', begin.checked? '1':'0');
+							const noseq=document.getElementById('hexNoSequential'); if(noseq) p.set('hexNoSequential', noseq.checked? '1':'0');
+							const scope=document.getElementById('hexCasingScope'); const x=document.getElementById('hexX');
+							if(scope && (casing?.value==='upper'||casing?.value==='lower')){ p.set('hexCasingScope', scope.value); if(scope.value!=='all' && x) p.set('hexX', String(x.value||'1')); }
+						}
+						return base + '?' + p.toString();
+					}
+					copyUrlBtn.addEventListener('click',()=>{
+						const url=buildUrl();
+						navigator.clipboard.writeText(url).then(()=>{ copyUrlBtn.textContent='URL Copied'; setTimeout(()=>copyUrlBtn.textContent='Copy URL',1000); });
+					});
+				}
 				document.addEventListener('change',e=>{ if(e.target && e.target.classList.contains('pw-select')) updateSelectAllButton(); });
 				validate();
 			})();
