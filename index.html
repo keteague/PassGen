@@ -329,14 +329,19 @@
 						const effectiveLen = suffixCfg.type==='mirror'? prefixStr.length : suffixCfg.length;
 						suffixStr=buildSuffixSegment(effectiveLen, suffixCfg.type, prefixStr);
 					}
-					// Leading letter insertion strategy to avoid retries when Begin with a letter is on
+					// Leading letter insertion only if needed (Begin with letter ON and prefix first char not a letter)
 					let leadingLetter='';
 					if(optBeginLetter?.checked){
-						const letters=[];
-						if(optLower?.checked) letters.push(...'abcdefghijklmnopqrstuvwxyz');
-						if(optUpper?.checked) letters.push(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-						if(!letters.length) return {pwd:null, reason:'begin-letter-no-letters'};
-						leadingLetter=letters[Math.floor(Math.random()*letters.length)];
+						const firstAffixChar = (prefixStr && prefixStr[0]) || '';
+						if(isLetter(firstAffixChar)){
+							// prefix already satisfies requirement
+						}else{
+							const letters=[];
+							if(optLower?.checked) letters.push(...'abcdefghijklmnopqrstuvwxyz');
+							if(optUpper?.checked) letters.push(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+							if(!letters.length) return {pwd:null, reason:'begin-letter-no-letters'};
+							leadingLetter=letters[Math.floor(Math.random()*letters.length)];
+						}
 					}
 					const coreLen = len - prefixStr.length - suffixStr.length - leadingLetter.length;
 					if(coreLen < 0) return {pwd:null, reason:'prefix-too-long'};
@@ -581,10 +586,17 @@
 					const optPrefix=document.getElementById('optPrefix');
 					const prefixLen=document.getElementById('prefixLen');
 					const prefixType=document.getElementById('prefixType');
+					function applyPrefixDisabled(){
+						const dis=!optPrefix.checked;
+						prefixLen.disabled=dis || prefixType.value==='custom';
+						prefixType.disabled=dis;
+						prefixCustom.disabled=dis || prefixType.value!=='custom';
+					}
 					function syncPrefix(){
 						window.__prefixEnabled=!!optPrefix.checked;
 						const len=parseInt(prefixLen.value,10)||0;
 						window.__prefixConfig={enabled:window.__prefixEnabled,length:len,type:prefixType.value};
+						applyPrefixDisabled();
 						if(optSavePrefs.checked) savePrefs();
 					}
 					const prefixCustom=document.getElementById('__prefixCustom');
@@ -620,12 +632,19 @@
 					const suffixType=document.getElementById('suffixType');
 					const suffixCustom=document.getElementById('__suffixCustom');
 					function toggleSuffixCustom(){ suffixCustom.style.display= suffixType.value==='custom'? 'inline-block':'none'; }
-					function handleMirrorDisable(){ suffixLen.disabled = suffixType.value==='mirror'; if(suffixType.value==='mirror'){ suffixLen.value=''; }
+					function handleMirrorDisable(){ suffixLen.disabled = suffixType.value==='mirror' || !optSuffix.checked; if(suffixType.value==='mirror'){ suffixLen.value=''; }
+					}
+					function applySuffixDisabled(){
+						const dis=!optSuffix.checked;
+						suffixType.disabled=dis;
+						suffixCustom.disabled=dis || suffixType.value!=='custom';
+						handleMirrorDisable();
 					}
 					function syncSuffix(){
 						window.__suffixEnabled=!!optSuffix.checked;
 						const len=parseInt(suffixLen.value,10)||0;
 						window.__suffixConfig={enabled:window.__suffixEnabled,length:len,type:suffixType.value};
+						applySuffixDisabled();
 						if(optSavePrefs.checked) savePrefs();
 					}
 					['change','input'].forEach(evt=>{ optSuffix.addEventListener(evt,syncSuffix); suffixLen.addEventListener(evt,syncSuffix); suffixType.addEventListener(evt,()=>{ toggleSuffixCustom(); handleMirrorDisable(); syncSuffix(); }); suffixCustom.addEventListener(evt,syncSuffix); });
