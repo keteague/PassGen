@@ -284,12 +284,27 @@
 					let source='';
 					if(type==='uppercase') source='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 					else if(type==='lowercase') source='abcdefghijklmnopqrstuvwxyz';
+					else if(type==='numbers') source=BASE_DIGITS;
 					else if(type==='symbols') source=sanitizeSymbols();
 					else if(type==='random') source=buildPool();
+					else if(type==='custom'){
+						const ci=document.getElementById('__prefixCustom');
+						if(ci) source=ci.value.slice(0,10);
+						// custom: return full (ignore len input) -> use provided string
+						return source;
+					}
 					if(!source) return '';
 					let out='';
 					for(let i=0;i<len;i++){ out+= source[Math.floor(Math.random()*source.length)]; }
 					return out;
+				}
+				function buildSuffixSegment(len,type,prefixStr){
+					if(type==='mirror') return [...(prefixStr||'')].reverse().join('');
+					if(type==='custom'){
+						const ci=document.getElementById('__suffixCustom');
+						return ci? ci.value.slice(0,10):'';
+					}
+					return buildPrefixSegment(len,type); // reuse logic
 				}
 				const SIMILAR_SET=new Set(['i','I','l','L','1','o','O','0']);
 				function withoutSimilar(pool){ if(!optNoSimilar?.checked) return pool; return [...new Set([...pool].filter(ch=>!SIMILAR_SET.has(ch)))].join(''); }
@@ -305,7 +320,25 @@
 						prefixCfg=window.__prefixConfig;
 					}
 					const prefixStr= (prefixCfg && prefixCfg.enabled)? buildPrefixSegment(prefixCfg.length, prefixCfg.type):'';
-					const coreLen = len - prefixStr.length;
+					// Suffix config
+					let suffixCfg=null; let suffixStr='';
+					if(modeSelect?.value==='password' && window.__suffixEnabled){
+						suffixCfg=window.__suffixConfig;
+					}
+					if(suffixCfg && suffixCfg.enabled){
+						const effectiveLen = suffixCfg.type==='mirror'? prefixStr.length : suffixCfg.length;
+						suffixStr=buildSuffixSegment(effectiveLen, suffixCfg.type, prefixStr);
+					}
+					// Leading letter insertion strategy to avoid retries when Begin with a letter is on
+					let leadingLetter='';
+					if(optBeginLetter?.checked){
+						const letters=[];
+						if(optLower?.checked) letters.push(...'abcdefghijklmnopqrstuvwxyz');
+						if(optUpper?.checked) letters.push(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+						if(!letters.length) return {pwd:null, reason:'begin-letter-no-letters'};
+						leadingLetter=letters[Math.floor(Math.random()*letters.length)];
+					}
+					const coreLen = len - prefixStr.length - suffixStr.length - leadingLetter.length;
 					if(coreLen < 0) return {pwd:null, reason:'prefix-too-long'};
 					if(optNoDuplicates?.checked && prefixStr){
 						// ensure prefix characters removed from pool if duplicates disallowed
@@ -314,20 +347,32 @@
 						pool=poolArr.join('');
 						if(pool.length < coreLen) return {pwd:null, reason:'pool-too-small'};
 					}
+					if(optNoDuplicates?.checked && suffixStr){
+						const poolArr=[...pool];
+						for(const ch of suffixStr){ const idx=poolArr.indexOf(ch); if(idx!==-1) poolArr.splice(idx,1); }
+						pool=poolArr.join('');
+						if(pool.length < coreLen) return {pwd:null, reason:'pool-too-small'};
+					}
+					if(optNoDuplicates?.checked && leadingLetter){
+						if(pool.includes(leadingLetter)){
+							pool=[...pool].filter(c=>c!==leadingLetter).join('');
+							if(pool.length < coreLen) return {pwd:null, reason:'pool-too-small'};
+						}
+					}
 					for(let attempt=0; attempt<5000; attempt++){
-						let pwd='';
+						let core='';
 						let localPool=pool;
 						if(optNoDuplicates?.checked){ localPool=[...pool]; }
-						for(let i=0;i<len;i++){
+						for(let i=0;i<coreLen;i++){
 							if(optNoDuplicates?.checked){
 								const idx=Math.floor(Math.random()*localPool.length);
-								pwd+=localPool[idx];
+								core+=localPool[idx];
 								localPool.splice(idx,1);
 							}else{
-								pwd+=randChar(pool);
+								core+=randChar(pool);
 							}
 						}
-						if(prefixStr){ pwd=prefixStr + pwd.slice(prefixStr.length); }
+						let pwd=leadingLetter + prefixStr + core + suffixStr;
 						if(optBeginLetter?.checked && !isLetter(pwd[0])) { continue; }
 						if(hasSequential(pwd)) { continue; }
 						return {pwd, reason:null};
@@ -373,8 +418,8 @@
 						// Pick most specific failure message
 						let msg='Unable to satisfy constraints.';
 						if(failures.includes('begin-letter-no-letters')) msg='"Begin with a letter" requires at least one letter class (enable Uppercase or Lowercase).';
-						else if(failures.includes('pool-too-small')) msg='Character pool too small for "No duplicates" at requested length.';
-						else if(failures.includes('prefix-too-long')) msg='Prefix length exceeds total requested length.';
+						else if(failures.includes('pool-too-small')) msg='Character pool too small for constraints at requested length.';
+						else if(failures.includes('prefix-too-long')) msg='Affix (prefix/suffix) length exceeds total requested length.';
 						else if(failures.includes('attempts-exhausted')) msg='Constraints (e.g., no sequential / first must be letter) could not be met after many attempts.';
 						symbolsError.textContent=msg; return;
 					}
@@ -442,6 +487,7 @@
 						count:countInput.value,
 						mode:modeSelect.value,
 						prefix:(window.__prefixConfig||null),
+						suffix:(window.__suffixConfig||null),
 						save:!!optSavePrefs.checked
 					};
 					const serialized=JSON.stringify(data);
@@ -468,6 +514,7 @@
 						count:countInput.value,
 						mode:modeSelect.value,
 						prefix:(window.__prefixConfig||null),
+						suffix:(window.__suffixConfig||null),
 						save:false
 					};
 					const serialized=JSON.stringify(data);
@@ -500,6 +547,7 @@
 						if('lengthMax' in d) lengthMax.value=d.lengthMax;
 						if('mode' in d && modeSelect) modeSelect.value=d.mode;
 						if('prefix' in d && d.prefix){ window.__prefixConfig=d.prefix; window.__prefixEnabled=d.prefix.enabled; }
+						if('suffix' in d && d.suffix){ window.__suffixConfig=d.suffix; window.__suffixEnabled=d.suffix.enabled; }
 						// Recompute mode visibility
 						lengthMode.dispatchEvent(new Event('change'));
 						validate();
@@ -522,9 +570,12 @@
 						<select id="prefixType" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;">
 							<option value="uppercase">Uppercase</option>
 							<option value="lowercase">Lowercase</option>
+							<option value="numbers">Numbers</option>
 							<option value="symbols">Symbols</option>
 							<option value="random" selected>Random</option>
+							<option value="custom">Custom</option>
 						</select>
+						<input type="text" id="__prefixCustom" maxlength="10" style="display:none;width:120px;background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;" placeholder="Custom" />
 					</div>`;
 					stack.appendChild(wrap);
 					const optPrefix=document.getElementById('optPrefix');
@@ -536,7 +587,58 @@
 						window.__prefixConfig={enabled:window.__prefixEnabled,length:len,type:prefixType.value};
 						if(optSavePrefs.checked) savePrefs();
 					}
-					['change','input'].forEach(evt=>{ optPrefix.addEventListener(evt,syncPrefix); prefixLen.addEventListener(evt,syncPrefix); prefixType.addEventListener(evt,syncPrefix); });
+					const prefixCustom=document.getElementById('__prefixCustom');
+					function toggleCustom(){ prefixCustom.style.display= prefixType.value==='custom'? 'inline-block':'none'; }
+					['change','input'].forEach(evt=>{ optPrefix.addEventListener(evt,syncPrefix); prefixLen.addEventListener(evt,syncPrefix); prefixType.addEventListener(evt,()=>{ toggleCustom(); syncPrefix(); }); prefixCustom.addEventListener(evt,syncPrefix); });
+					toggleCustom();
+				// Inject Suffix UI
+				(function initSuffix(){
+					const stack=document.querySelector('.options-stack');
+					if(!stack) return;
+					const wrap=document.createElement('label');
+					wrap.className='chk suffix-wrap';
+					wrap.style.alignItems='flex-start';
+					wrap.innerHTML=`<span style="display:inline-flex;align-items:center;gap:8px;">
+						<input type="checkbox" id="optSuffix" /> <span>Suffix</span>
+					</span>
+					<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:8px;">
+						<input type="number" min="1" max="32" id="suffixLen" style="width:60px;background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;" placeholder="#" />
+						<select id="suffixType" style="background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;">
+							<option value="uppercase">Uppercase</option>
+							<option value="lowercase">Lowercase</option>
+							<option value="numbers">Numbers</option>
+							<option value="symbols">Symbols</option>
+							<option value="random" selected>Random</option>
+							<option value="custom">Custom</option>
+							<option value="mirror">Mirror</option>
+						</select>
+						<input type="text" id="__suffixCustom" maxlength="10" style="display:none;width:120px;background:#0b1624;border:1px solid #2c4256;color:#f1f5f9;padding:6px 8px;font:600 .6rem/1 system-ui;border-radius:8px;" placeholder="Custom" />
+					</div>`;
+					stack.appendChild(wrap);
+					const optSuffix=document.getElementById('optSuffix');
+					const suffixLen=document.getElementById('suffixLen');
+					const suffixType=document.getElementById('suffixType');
+					const suffixCustom=document.getElementById('__suffixCustom');
+					function toggleSuffixCustom(){ suffixCustom.style.display= suffixType.value==='custom'? 'inline-block':'none'; }
+					function handleMirrorDisable(){ suffixLen.disabled = suffixType.value==='mirror'; if(suffixType.value==='mirror'){ suffixLen.value=''; }
+					}
+					function syncSuffix(){
+						window.__suffixEnabled=!!optSuffix.checked;
+						const len=parseInt(suffixLen.value,10)||0;
+						window.__suffixConfig={enabled:window.__suffixEnabled,length:len,type:suffixType.value};
+						if(optSavePrefs.checked) savePrefs();
+					}
+					['change','input'].forEach(evt=>{ optSuffix.addEventListener(evt,syncSuffix); suffixLen.addEventListener(evt,syncSuffix); suffixType.addEventListener(evt,()=>{ toggleSuffixCustom(); handleMirrorDisable(); syncSuffix(); }); suffixCustom.addEventListener(evt,syncSuffix); });
+					if(window.__suffixConfig){
+						optSuffix.checked=!!window.__suffixConfig.enabled;
+						if(window.__suffixConfig.length) suffixLen.value=window.__suffixConfig.length;
+						if(window.__suffixConfig.type) suffixType.value=window.__suffixConfig.type;
+					}
+					toggleSuffixCustom(); handleMirrorDisable(); syncSuffix();
+					function applyModeVisibility(){ wrap.style.display= (modeSelect.value==='password')? 'inline-flex':'none'; }
+					modeSelect.addEventListener('change',()=>{ applyModeVisibility(); if(optSavePrefs.checked) savePrefs(); });
+					applyModeVisibility();
+				})();
 					// Populate from loaded prefs if available
 					if(window.__prefixConfig){
 						optPrefix.checked=!!window.__prefixConfig.enabled;
