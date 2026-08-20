@@ -67,7 +67,7 @@
 </head>
 <body>
 	<div class="container">
-		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.33</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
+		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.35</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
@@ -242,7 +242,7 @@
 							</ul>
 							<p>Password options:</p>
 							<ul>
-								<li><code>optUpper</code>, <code>optLower</code>, <code>optNums</code>, <code>optSpace</code>, <code>optBeginLetter</code>, <code>optNoSimilar</code>, <code>optNoDuplicates</code>, <code>optNoSequential</code> = 1|0</li>
+								<li><code>optUpper</code>, <code>optLower</code>, <code>optNums</code>, <code>optSpace</code>, <code>optSymbols</code>, <code>optBeginLetter</code>, <code>optNoSimilar</code>, <code>optNoDuplicates</code>, <code>optNoSequential</code> = 1|0</li>
 								<li><code>symbols</code>: custom symbols string</li>
 								<li><code>forceSymbols</code>=1|0, <code>forceCount</code>=1..9</li>
 							</ul>
@@ -385,6 +385,7 @@
 				const tip=document.getElementById('lengthTip');
 				const genBtn=document.getElementById('generateBtn');
 				const pwOutput=document.getElementById('pwOutput');
+				const selectAllBtn=document.getElementById('selectAllBtn');
 				const genStatus=document.getElementById('genStatus');
 				const countInput=document.getElementById('countInput');
 				const countInfo=document.getElementById('countInfo');
@@ -433,7 +434,13 @@
 					const hexControls=document.getElementById('hexControls');
 					if(hexControls){ hexControls.style.display= isHex? 'flex':'none'; }
 					// Base groups to hide for non-password modes
-					const baseHide=['optUpper','optLower','optNums','optSpace','optSymbols','optForceSymbols','forceSymbolCount','symbolsText','symbolsReset','optNoSimilar','optNoDuplicates'];
+					// Note: 'optForceSymbols' is deliberately excluded here. Its nearest <label>
+					// ancestor is the small inline-flex label around just the checkbox + its own
+					// text (not the Symbols row), so toggling it via closest('label') would clobber
+					// that label's own display:inline-flex styling. It's already hidden/shown as a
+					// side effect of the Symbols row (optSymbols/symbolsText/symbolsReset) below it
+					// being hidden/shown, since it's nested inside that row.
+					const baseHide=['optUpper','optLower','optNums','optSpace','optSymbols','forceSymbolCount','symbolsText','symbolsReset','optNoSimilar','optNoDuplicates'];
 					// Additional hides only for passphrase
 					const passphraseOnlyHide=['optBeginLetter','optNoSequential'];
 					const toHide = isPass? baseHide.concat(passphraseOnlyHide) : (isHex? baseHide : []);
@@ -519,7 +526,7 @@
 					lengthMin.value='12';
 					lengthMax.value='16';
 					countInput.value='1';
-					modeSelect.value='password';
+					modeSelect.value='password'; modeSelect.dispatchEvent(new Event('change'));
 					// Core toggles
 					optUpper.checked=true; optLower.checked=true; optNums.checked=true; optSpace.checked=false; optSymbols.checked=true;
 					optBeginLetter.checked=true; optNoSimilar.checked=true; optNoDuplicates.checked=true; optNoSequential.checked=true;
@@ -628,18 +635,18 @@
 					return pool;
 				}
 				function buildPrefixSegment(len,type){
+					len=Math.min(32, Math.max(0, parseInt(len,10)||0));
+					if(type==='custom'){
+						// custom: return full (ignore len input) -> use provided string
+						const ci=document.getElementById('__prefixCustom');
+						return ci? ci.value.slice(0,10) : '';
+					}
 					if(!len || len<=0) return '';
 					let source='';
 					if(type==='uppercase') source='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 					else if(type==='lowercase') source='abcdefghijklmnopqrstuvwxyz';
 					else if(type==='numbers') source=BASE_DIGITS;
 					else if(type==='symbols') source=sanitizeSymbols();
-					else if(type==='custom'){
-						const ci=document.getElementById('__prefixCustom');
-						if(ci) source=ci.value.slice(0,10);
-						// custom: return full (ignore len input) -> use provided string
-						return source;
-					}
 					if(!source) return '';
 					let out='';
 					for(let i=0;i<len;i++){ out+= source[Math.floor(Math.random()*source.length)]; }
@@ -673,7 +680,7 @@
 						MAX_WORD_LEN=Math.max(...lens);
 					}catch(e){ PASSPHRASE_WORDS=[]; }
 				}
-				loadWordList();
+				const wordListReady=loadWordList();
 				function generatePassword(len){
 					let pool=buildPool();
 					pool=withoutSimilar(pool);
@@ -1386,7 +1393,7 @@
 				},{capture:true}));
 				loadPrefs();
 				// --- Simple URL/API support ---
-				(function wireApi(){
+				(async function wireApi(){
 					const params=new URLSearchParams(location.search);
 					if(!params || [...params].length===0) return;
 					function setIf(id, val){ const el=document.getElementById(id); if(!el) return; if(el.tagName==='INPUT' && (el.type==='checkbox')) el.checked = (val==='1'||val==='true'); else if(el.tagName==='INPUT' || el.tagName==='SELECT') el.value=val; }
@@ -1397,7 +1404,7 @@
 					if(params.get('max')){ setIf('lengthMax', params.get('max')); setIf('lengthMode','range'); }
 					if(params.get('count')){ setIf('countInput', params.get('count')); }
 					// Password options
-					['optUpper','optLower','optNums','optSpace','optBeginLetter','optNoSimilar','optNoDuplicates','optNoSequential'].forEach(k=>{ if(params.has(k)) setIf(k, params.get(k)); });
+					['optUpper','optLower','optNums','optSpace','optSymbols','optBeginLetter','optNoSimilar','optNoDuplicates','optNoSequential'].forEach(k=>{ if(params.has(k)) setIf(k, params.get(k)); });
 					if(params.get('symbols')){ const s=document.getElementById('symbolsText'); if(s){ s.value=params.get('symbols'); } }
 					if(params.has('forceSymbols')) setIf('optForceSymbols', params.get('forceSymbols'));
 					if(params.get('forceCount')) setIf('forceSymbolCount', params.get('forceCount'));
@@ -1421,6 +1428,11 @@
 					['hexBeginLetter','hexNoSequential'].forEach(k=>{ if(params.has(k)) setIf(k, params.get(k)); });
 					// Trigger visibility updates and generate
 					applyModeOptionVisibility();
+					// applyModeOptionVisibility() re-mirrors hexBeginLetter/hexNoSequential from the
+					// generic optBeginLetter/optNoSequential checkboxes, which would silently clobber
+					// explicit hexBeginLetter/hexNoSequential URL params set above. Re-apply them now
+					// that visibility syncing has run.
+					['hexBeginLetter','hexNoSequential'].forEach(k=>{ if(params.has(k)) setIf(k, params.get(k)); });
 					// Ensure prefix/suffix dynamic UI syncs configs
 					const optPrefix=document.getElementById('optPrefix'); const prefixLen=document.getElementById('prefixLen'); const prefixType=document.getElementById('prefixType'); const prefixCustom=document.getElementById('__prefixCustom');
 					if(optPrefix && optPrefix.checked){
@@ -1432,13 +1444,27 @@
 						window.__suffixEnabled=true;
 						window.__suffixConfig={enabled:true,length: parseInt(suffixLen?.value||'0',10)||0, type: suffixType?.value||'uppercase'};
 					}
+					// Passphrase generation depends on words.txt having finished loading; without this,
+					// a fresh page load hitting this URL handler would race the fetch and always fail.
+					await wordListReady;
 					if(params.get('format')==='text'){
 						// Generate and output plaintext response
-						const c = parseInt(params.get('count')||'1',10);
 						doGenerate();
 						const lines=[...document.querySelectorAll('#pwOutput li')].map(li=> li.querySelector('span[aria-label="Password"]').textContent);
-						// replace DOM with pre tag for simple copy via curl
-						document.body.innerHTML = '<pre style="white-space:pre; margin:0; padding:12px; background:#0f172a; color:#f1f5f9;">'+ lines.join('\n') + '\n</pre>';
+						let text;
+						if(lines.length){ text = lines.join('\n') + '\n'; }
+						else {
+							// Surface the relevant validation/generation error instead of a silent blank response
+							const errEl=[error, countError, delimError, symbolsError].find(el=> el && el.textContent);
+							text = (errEl? errEl.textContent : 'Unable to generate passwords with the given parameters.') + '\n';
+						}
+						// Build via DOM APIs (not innerHTML) so custom prefix/suffix/symbol values
+						// from URL params can never be interpreted as HTML/script.
+						document.body.textContent='';
+						const pre=document.createElement('pre');
+						pre.style.cssText='white-space:pre; margin:0; padding:12px; background:#0f172a; color:#f1f5f9;';
+						pre.textContent=text;
+						document.body.appendChild(pre);
 						return;
 					}
 					// Otherwise, just generate into UI
@@ -1464,7 +1490,6 @@
 					window.addEventListener('click',hideC);
 				}
 				const copyAllBtn=document.getElementById('copyAllBtn');
-				const selectAllBtn=document.getElementById('selectAllBtn');
 				const downloadBtn=document.getElementById('downloadBtn');
 				const copyUrlBtn=document.getElementById('copyUrlBtn');
 				function getAllCheckboxes(){ return [...document.querySelectorAll('.pw-select')]; }
@@ -1481,7 +1506,7 @@
 						else{ p.set('min', String(lengthMin.value||'')); p.set('max', String(lengthMax.value||'')); }
 						p.set('count', String(countInput.value||'1'));
 						if(modeSelect.value==='password'){
-							['optUpper','optLower','optNums','optSpace','optBeginLetter','optNoSimilar','optNoDuplicates','optNoSequential'].forEach(id=>{ const el=document.getElementById(id); if(el) p.set(id, el.checked? '1':'0'); });
+							['optUpper','optLower','optNums','optSpace','optSymbols','optBeginLetter','optNoSimilar','optNoDuplicates','optNoSequential'].forEach(id=>{ const el=document.getElementById(id); if(el) p.set(id, el.checked? '1':'0'); });
 							if(optSymbols?.checked){ p.set('symbols', symbolsText.value); if(optForceSymbols?.checked){ p.set('forceSymbols','1'); p.set('forceCount', String(forceSymbolCount.value||'1')); } }
 						}
 						// Affixes (for all modes)
