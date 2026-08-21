@@ -67,7 +67,7 @@
 </head>
 <body>
 	<div class="container">
-		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.35</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
+		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.36</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
@@ -667,6 +667,7 @@
 				let PASSPHRASE_WORDS=null; // array once loaded
 				let WORDS_BY_LENGTH={};
 				let MIN_WORD_LEN=1; let MAX_WORD_LEN=1;
+				const PREFERRED_MIN_WORD_LEN=6; // prefer 6+ letter words in passphrases; shorter only when required to hit the exact target length
 				async function loadWordList(){
 					try{
 						const resp= await fetch('words.txt');
@@ -872,9 +873,19 @@
 						let words=[]; let usedLen=0;
 						for(let i=0;i<W-1;i++){
 							const remainingSlots = W-1 - i; // excluding current pick
-							const maxForThis = neededCore - usedLen - MIN_WORD_LEN*remainingSlots;
-							const minForThis = Math.max(MIN_WORD_LEN, neededCore - usedLen - MAX_WORD_LEN*remainingSlots);
-							const viableLens = Object.keys(WORDS_BY_LENGTH).map(n=>parseInt(n,10)).filter(L=> L>=minForThis && L<=maxForThis);
+							// Tier 1: reserve PREFERRED_MIN_WORD_LEN for every remaining slot (this word
+							// and the ones after it, including the final forced-remainder word), so the
+							// whole passphrase tends toward 6+ letter words instead of just this one pick.
+							let maxForThis = neededCore - usedLen - PREFERRED_MIN_WORD_LEN*remainingSlots;
+							let minForThis = Math.max(PREFERRED_MIN_WORD_LEN, neededCore - usedLen - MAX_WORD_LEN*remainingSlots);
+							let viableLens = Object.keys(WORDS_BY_LENGTH).map(n=>parseInt(n,10)).filter(L=> L>=minForThis && L<=maxForThis);
+							if(!viableLens.length){
+								// Tier 2 fallback: only relax to the true minimum word length when 6+
+								// genuinely can't fit within the remaining length budget.
+								maxForThis = neededCore - usedLen - MIN_WORD_LEN*remainingSlots;
+								minForThis = Math.max(MIN_WORD_LEN, neededCore - usedLen - MAX_WORD_LEN*remainingSlots);
+								viableLens = Object.keys(WORDS_BY_LENGTH).map(n=>parseInt(n,10)).filter(L=> L>=minForThis && L<=maxForThis);
+							}
 							if(!viableLens.length) { words=[]; break; }
 							const pickLen = viableLens[Math.floor(Math.random()*viableLens.length)];
 							const bucket=WORDS_BY_LENGTH[pickLen];
