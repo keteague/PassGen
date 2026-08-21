@@ -67,7 +67,7 @@
 </head>
 <body>
 	<div class="container">
-		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.39</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
+		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.40</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
@@ -848,6 +848,20 @@
 						return ch;
 					}).join('');
 				}
+				function pickUnusedWord(bucket, usedWords){
+					if(!bucket || !bucket.length) return null;
+					// Random-draw-and-reject is cheap and avoids scanning the whole bucket when
+					// it's large relative to how many words are already used in this passphrase
+					// (the common case -- buckets run into the thousands, W is at most 10).
+					const maxTries = Math.min(8, bucket.length);
+					for(let t=0; t<maxTries; t++){
+						const w = bucket[Math.floor(Math.random()*bucket.length)];
+						if(!usedWords.has(w)) return w;
+					}
+					// Fallback for small buckets, or ones mostly exhausted by earlier picks.
+					const avail = bucket.filter(w=>!usedWords.has(w));
+					return avail.length ? avail[Math.floor(Math.random()*avail.length)] : null;
+				}
 				function generatePassphrase(targetLen){
 					if(PASSPHRASE_WORDS===null) return {pwd:null, reason:'wordlist-not-loaded'};
 					if(PASSPHRASE_WORDS.length===0) return {pwd:null, reason:'wordlist-empty'};
@@ -898,11 +912,9 @@
 										? remainingAfter===0
 										: (remainingAfter >= MIN_WORD_LEN*remainingSlotsAfter && remainingAfter <= MAX_WORD_LEN*remainingSlotsAfter);
 									if(!feasible) continue;
-									const bucket=WORDS_BY_LENGTH[L];
-									if(!bucket || !bucket.length) continue;
-									const avail=bucket.filter(w=>!usedWords.has(w));
-									if(!avail.length) continue;
-									chosenLen=L; chosenWord=avail[Math.floor(Math.random()*avail.length)];
+									const pickedWord = pickUnusedWord(WORDS_BY_LENGTH[L], usedWords);
+									if(pickedWord===null) continue;
+									chosenLen=L; chosenWord=pickedWord;
 									break;
 								}
 							}
@@ -1068,7 +1080,24 @@
 							return frag;
 						}
 						function estimateStrength(pw){
-							// Rough entropy estimate by character class coverage
+							if(modeSelect.value==='passphrase'){
+								// Word-based passphrase: the real entropy comes from which word was
+								// picked at each position, not from the character alphabet of the
+								// assembled string -- casing/delimiters/replacements are cosmetic and
+								// don't add to the brute-force search space the way a random character
+								// would, so scoring this like a random-character password would wildly
+								// overstate its strength.
+								const W = parseInt(ppWords?.value,10)||3;
+								const dictSize = Math.max((PASSPHRASE_WORDS && PASSPHRASE_WORDS.length) || 1, 1);
+								let bits = W * Math.log2(dictSize);
+								if(ppIncludeNumber?.checked) bits += Math.log2(10);
+								if(bits < 28) return {label:'very weak', cls:'str-very-weak'};
+								if(bits < 36) return {label:'weak', cls:'str-weak'};
+								if(bits < 60) return {label:'fair', cls:'str-fair'};
+								if(bits < 128) return {label:'strong', cls:'str-strong'};
+								return {label:'very strong', cls:'str-very-strong'};
+							}
+							// Rough entropy estimate by character class coverage (password/hex modes)
 							let alphabet=0;
 							if(/[a-z]/.test(pw)) alphabet+=26;
 							if(/[A-Z]/.test(pw)) alphabet+=26;

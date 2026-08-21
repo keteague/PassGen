@@ -17,4 +17,18 @@ Features:
 - Reset Defaults modal to restore baseline settings
 - Collapsible sections with disclosure triangles
 
-Version: v0.03.39
+## Testing
+
+`test/regression.js` is a small headless-Chrome regression harness covering the
+URL/API query parameters and the passphrase generator (word-length distribution,
+duplicate-word prevention, exact-length matching). It has no dependencies beyond
+a local Chrome/Edge install:
+
+```
+node test/regression.js
+```
+
+Chrome is located automatically on common install paths; set `CHROME_PATH` to
+override. Run it after touching `index.html` to catch regressions early.
+
+Version: v0.03.40
