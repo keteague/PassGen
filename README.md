@@ -17,4 +17,4 @@ Features:
 - Reset Defaults modal to restore baseline settings
 - Collapsible sections with disclosure triangles
 
-Version: v0.03.37
+Version: v0.03.38

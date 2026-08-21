@@ -67,7 +67,7 @@
 </head>
 <body>
 	<div class="container">
-		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.37</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
+		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.38</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
@@ -667,7 +667,6 @@
 				let PASSPHRASE_WORDS=null; // array once loaded
 				let WORDS_BY_LENGTH={};
 				let MIN_WORD_LEN=1; let MAX_WORD_LEN=1;
-				const PREFERRED_MIN_WORD_LEN=6; // prefer 6+ letter words in passphrases; shorter only when required to hit the exact target length
 				async function loadWordList(){
 					try{
 						const resp= await fetch('words.txt');
@@ -868,35 +867,42 @@
 					const overhead = prefixStr.length + suffixStr.length + leadingWS.length + trailingWS.length + numberLen + delimiter.length*(W-1);
 					const neededCore = targetLen - overhead;
 					if(neededCore < W*MIN_WORD_LEN || neededCore > W*MAX_WORD_LEN) return {pwd:null, reason:'passphrase-length-unmet'};
-					// Attempt allocate words by picking first W-1 then solving last exactly
+					// Allocate word lengths so the passphrase is as evenly distributed as possible
+					// (rather than one long word next to several very short ones), and never repeat
+					// the same word twice in one passphrase. Each slot's target length is the average
+					// of whatever budget/slots remain at that point, so earlier picks landing slightly
+					// off-average don't cascade into a run of short words later on; only reaching for
+					// a length further from that average when nothing closer has an unused word left.
 					for(let attempt=0; attempt<3000; attempt++){
-						let words=[]; let usedLen=0;
-						for(let i=0;i<W-1;i++){
-							const remainingSlots = W-1 - i; // excluding current pick
-							// Tier 1: reserve PREFERRED_MIN_WORD_LEN for every remaining slot (this word
-							// and the ones after it, including the final forced-remainder word), so the
-							// whole passphrase tends toward 6+ letter words instead of just this one pick.
-							let maxForThis = neededCore - usedLen - PREFERRED_MIN_WORD_LEN*remainingSlots;
-							let minForThis = Math.max(PREFERRED_MIN_WORD_LEN, neededCore - usedLen - MAX_WORD_LEN*remainingSlots);
-							let viableLens = Object.keys(WORDS_BY_LENGTH).map(n=>parseInt(n,10)).filter(L=> L>=minForThis && L<=maxForThis);
-							if(!viableLens.length){
-								// Tier 2 fallback: only relax to the true minimum word length when 6+
-								// genuinely can't fit within the remaining length budget.
-								maxForThis = neededCore - usedLen - MIN_WORD_LEN*remainingSlots;
-								minForThis = Math.max(MIN_WORD_LEN, neededCore - usedLen - MAX_WORD_LEN*remainingSlots);
-								viableLens = Object.keys(WORDS_BY_LENGTH).map(n=>parseInt(n,10)).filter(L=> L>=minForThis && L<=maxForThis);
+						let words=[]; let usedLen=0; let ok=true;
+						const usedWords=new Set();
+						for(let i=0;i<W;i++){
+							const remainingSlots = W - i; // slots including this one
+							const remainingBudget = neededCore - usedLen;
+							const idealLen = Math.round(remainingBudget / remainingSlots);
+							let chosenLen=null, chosenWord=null;
+							for(let radius=0; chosenLen===null && radius<=MAX_WORD_LEN; radius++){
+								const candidates = radius===0? [idealLen] : (Math.random()<0.5? [idealLen-radius, idealLen+radius] : [idealLen+radius, idealLen-radius]);
+								for(const L of candidates){
+									if(L<MIN_WORD_LEN || L>MAX_WORD_LEN) continue;
+									const remainingSlotsAfter = remainingSlots-1;
+									const remainingAfter = remainingBudget - L;
+									const feasible = remainingSlotsAfter===0
+										? remainingAfter===0
+										: (remainingAfter >= MIN_WORD_LEN*remainingSlotsAfter && remainingAfter <= MAX_WORD_LEN*remainingSlotsAfter);
+									if(!feasible) continue;
+									const bucket=WORDS_BY_LENGTH[L];
+									if(!bucket || !bucket.length) continue;
+									const avail=bucket.filter(w=>!usedWords.has(w));
+									if(!avail.length) continue;
+									chosenLen=L; chosenWord=avail[Math.floor(Math.random()*avail.length)];
+									break;
+								}
 							}
-							if(!viableLens.length) { words=[]; break; }
-							const pickLen = viableLens[Math.floor(Math.random()*viableLens.length)];
-							const bucket=WORDS_BY_LENGTH[pickLen];
-							const pickedWord = bucket[Math.floor(Math.random()*bucket.length)];
-							words.push(pickedWord); usedLen+=pickLen;
+							if(chosenLen===null){ ok=false; break; }
+							words.push(chosenWord); usedLen+=chosenLen; usedWords.add(chosenWord);
 						}
-						if(words.length!==W-1) continue; // failed early
-						const remaining = neededCore - usedLen;
-						const finalBucket = WORDS_BY_LENGTH[remaining];
-						if(!finalBucket || !finalBucket.length) continue;
-						words.push(finalBucket[Math.floor(Math.random()*finalBucket.length)]);
+						if(!ok) continue;
 						// Apply casing & replacements
 						const transformed = words.map((w,i)=> applyReplacements(applyCasing(w,i,words.length)));
 						let core = transformed.join(delimiter);
