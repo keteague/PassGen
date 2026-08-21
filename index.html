@@ -67,7 +67,7 @@
 </head>
 <body>
 	<div class="container">
-		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.38</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
+		<h1 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">Password Generator <small id="appVersion" style="font-size:.75rem;font-weight:500;color:#94a3b8;">v0.03.39</small><button type="button" id="themeToggle" class="mini-btn" style="margin-left:auto;">Light mode</button></h1>
 			<main id="main">
 				<section id="settings" class="subsection">
 					<h2 class="subheading"><button type="button" class="collapse-btn" aria-expanded="true">SETTINGS</button></h2>
@@ -880,9 +880,16 @@
 							const remainingSlots = W - i; // slots including this one
 							const remainingBudget = neededCore - usedLen;
 							const idealLen = Math.round(remainingBudget / remainingSlots);
+							// Nudge the target by up to +/-2 letters for natural variety, so words
+							// aren't all forced to the exact same length. Only when another slot
+							// follows this one -- the last word must land on the precise remaining
+							// budget (with one slot left, that IS the exact average) for the total
+							// to add up.
+							const wobble = remainingSlots>1 ? (Math.floor(Math.random()*5)-2) : 0;
+							const searchCenter = idealLen + wobble;
 							let chosenLen=null, chosenWord=null;
 							for(let radius=0; chosenLen===null && radius<=MAX_WORD_LEN; radius++){
-								const candidates = radius===0? [idealLen] : (Math.random()<0.5? [idealLen-radius, idealLen+radius] : [idealLen+radius, idealLen-radius]);
+								const candidates = radius===0? [searchCenter] : (Math.random()<0.5? [searchCenter-radius, searchCenter+radius] : [searchCenter+radius, searchCenter-radius]);
 								for(const L of candidates){
 									if(L<MIN_WORD_LEN || L>MAX_WORD_LEN) continue;
 									const remainingSlotsAfter = remainingSlots-1;
