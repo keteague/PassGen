@@ -1,3 +1,8 @@
+## v0.03.37 - words.txt trimmed to dictionary headwords (no inflections)
+- words.txt reduced from 81,813 words to 38,261 by keeping only dictionary headwords and dropping their listed inflections (plurals, verb forms, etc.), which were showing up as near-duplicate "variants" in generated passphrases (e.g. both "ability" and "abilities", or "abandon" and "abandons"/"abandoning"/"abandoned").
+- `-ies` endings dropped from 2,210 to 21, `-ities` from 650 to 2, `-s` from 30,309 to 3,229, `-es` from 10,577 to 76 words. Length coverage from 2-23 letters remains unbroken, so passphrase length-matching still works across all requested lengths.
+- Previous word list preserved as `words.txt.bak2`.
+
 ## v0.03.36 - Passphrases now prefer 6+ letter words
 - Passphrase word-length selection previously picked a length uniformly at random from the whole viable range at each slot (e.g. 2 through 17), giving every length equal odds regardless of how many words of that length actually exist. Since the dictionary has far more long words than very short ones, this meant each short word (there are only ~60 two-letter words) was individually picked far more often per-word than each long word, so 2-letter words showed up constantly.
 - Word-length selection now reserves at least 6 letters per remaining word (including the final, forced-remainder word) whenever the target length has room for it, so passphrases are built from 6+ letter words by default. It only drops to shorter words for a slot when the requested length genuinely can't fit 6+ everywhere (e.g. a short target length with several words).
